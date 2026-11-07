@@ -10,15 +10,18 @@
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="FontSize" Value="14" />
         <Setter Property="FontWeight" Value="SemiBold" />
-        <Setter Property="Foreground" Value="#CBD5E1" />
+        <Setter Property="Foreground" Value="#E2E8F0" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
                     <Border x:Name="border"
                             Background="{TemplateBinding Background}"
+                            BorderBrush="Transparent"
+                            BorderThickness="1"
                             CornerRadius="8"
                             Padding="{TemplateBinding Padding}">
                         <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
@@ -26,11 +29,12 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="border" Property="Background" Value="{StaticResource SidebarItemHoverBrush}" />
+                            <Setter TargetName="border" Property="Background" Value="#1E293B" />
+                            <Setter TargetName="border" Property="BorderBrush" Value="#3B82F6" />
                             <Setter Property="Foreground" Value="#FFFFFF" />
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
-                            <Setter TargetName="border" Property="Background" Value="{StaticResource SidebarItemActiveBrush}" />
+                            <Setter TargetName="border" Property="Background" Value="#2563EB" />
                             <Setter Property="Foreground" Value="#FFFFFF" />
                         </Trigger>
                     </ControlTemplate.Triggers>
@@ -39,31 +43,39 @@
         </Setter>
     </Style>
 
-    <!-- Style Nút bấm chính (Primary Button) -->
+    <!-- Style Nút bấm chính (Primary Button) - Hiệu ứng chuyển màu rõ nét -->
     <Style x:Key="PrimaryButtonStyle" TargetType="Button">
-        <Setter Property="Height" Value="38" />
+        <Setter Property="Height" Value="40" />
         <Setter Property="Padding" Value="16,0" />
         <Setter Property="FontSize" Value="13" />
-        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="FontWeight" Value="Bold" />
         <Setter Property="Foreground" Value="{StaticResource TextInverseBrush}" />
         <Setter Property="Background" Value="{StaticResource PrimaryBrush}" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
                     <Border x:Name="border"
                             Background="{TemplateBinding Background}"
+                            BorderBrush="#1D4ED8"
+                            BorderThickness="1"
                             CornerRadius="8"
                             Padding="{TemplateBinding Padding}">
                         <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="border" Property="Background" Value="{StaticResource PrimaryDarkBrush}" />
+                            <Setter TargetName="border" Property="Background" Value="#1E40AF" />
+                            <Setter TargetName="border" Property="BorderBrush" Value="#1E3A8A" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="border" Property="Background" Value="#172554" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter TargetName="border" Property="Background" Value="#94A3B8" />
+                            <Setter TargetName="border" Property="BorderBrush" Value="#94A3B8" />
                             <Setter Property="Cursor" Value="No" />
                         </Trigger>
                     </ControlTemplate.Triggers>
@@ -72,17 +84,18 @@
         </Setter>
     </Style>
 
-    <!-- Style Nút bấm phụ (Secondary Button) -->
+    <!-- Style Nút bấm phụ (Secondary Button) - Hiệu ứng chuyển màu rõ nét -->
     <Style x:Key="SecondaryButtonStyle" TargetType="Button">
         <Setter Property="Height" Value="38" />
         <Setter Property="Padding" Value="14,0" />
         <Setter Property="FontSize" Value="13" />
-        <Setter Property="FontWeight" Value="Medium" />
+        <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
         <Setter Property="Background" Value="#F1F5F9" />
-        <Setter Property="BorderBrush" Value="{StaticResource BorderLightBrush}" />
-        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="#94A3B8" />
+        <Setter Property="BorderThickness" Value="1.5" />
         <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
@@ -96,7 +109,12 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="border" Property="Background" Value="#E2E8F0" />
+                            <Setter TargetName="border" Property="Background" Value="#DBEAFE" />
+                            <Setter TargetName="border" Property="BorderBrush" Value="#2563EB" />
+                            <Setter Property="Foreground" Value="#1E40AF" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="border" Property="Background" Value="#BFDBFE" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -109,23 +127,35 @@
         <Setter Property="Height" Value="38" />
         <Setter Property="Padding" Value="14,0" />
         <Setter Property="FontSize" Value="13" />
-        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="FontWeight" Value="Bold" />
         <Setter Property="Foreground" Value="{StaticResource TextInverseBrush}" />
         <Setter Property="Background" Value="{StaticResource DangerBrush}" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
                     <Border x:Name="border"
                             Background="{TemplateBinding Background}"
+                            BorderBrush="#B91C1C"
+                            BorderThickness="1"
                             CornerRadius="8"
                             Padding="{TemplateBinding Padding}">
                         <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="border" Property="Background" Value="#DC2626" />
+                            <Setter TargetName="border" Property="Background" Value="#991B1B" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="border" Property="Background" Value="#7F1D1D" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="border" Property="Background" Value="#CBD5E1" />
+                            <Setter TargetName="border" Property="BorderBrush" Value="#CBD5E1" />
+                            <Setter Property="Foreground" Value="#64748B" />
+                            <Setter Property="Cursor" Value="No" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -133,38 +163,36 @@
         </Setter>
     </Style>
 
-    <!-- Style Khung thẻ (Card Border) -->
+    <!-- Style Khung thẻ sắc nét (Card Border - Không dùng DropShadowEffect trên chữ để giữ ClearType nét 100%) -->
     <Style x:Key="CardBorderStyle" TargetType="Border">
         <Setter Property="Background" Value="{StaticResource CardBgBrush}" />
         <Setter Property="BorderBrush" Value="{StaticResource BorderLightBrush}" />
-        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderThickness" Value="1.5" />
         <Setter Property="CornerRadius" Value="12" />
-        <Setter Property="Padding" Value="16" />
-        <Setter Property="Effect">
-            <Setter.Value>
-                <DropShadowEffect BlurRadius="8" Direction="270" ShadowDepth="2" Opacity="0.04" Color="#0F172A" />
-            </Setter.Value>
-        </Setter>
+        <Setter Property="Padding" Value="18" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="UseLayoutRounding" Value="True" />
     </Style>
 
     <!-- Style Khung thẻ số liệu thống kê (Stat Card Border cho WrapPanel) -->
     <Style x:Key="StatCardBorderStyle" TargetType="Border" BasedOn="{StaticResource CardBorderStyle}">
-        <Setter Property="MinWidth" Value="240" />
-        <Setter Property="Height" Value="100" />
+        <Setter Property="MinWidth" Value="250" />
+        <Setter Property="Height" Value="108" />
         <Setter Property="Margin" Value="0,0,16,16" />
-        <Setter Property="Padding" Value="18,14" />
+        <Setter Property="Padding" Value="0" />
     </Style>
 
-    <!-- Style Ô nhập liệu chuẩn (Modern TextBox) -->
+    <!-- Style Ô nhập liệu chuẩn sắc nét (Modern TextBox) -->
     <Style x:Key="ModernTextBoxStyle" TargetType="TextBox">
         <Setter Property="Height" Value="38" />
         <Setter Property="Padding" Value="10,0" />
         <Setter Property="FontSize" Value="13" />
         <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
         <Setter Property="Background" Value="#FFFFFF" />
-        <Setter Property="BorderBrush" Value="{StaticResource BorderLightBrush}" />
-        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="#94A3B8" />
+        <Setter Property="BorderThickness" Value="1.5" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="TextBox">
@@ -176,9 +204,13 @@
                         <ScrollViewer x:Name="PART_ContentHost" Focusable="False" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" />
                     </Border>
                     <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="border" Property="BorderBrush" Value="#64748B" />
+                        </Trigger>
                         <Trigger Property="IsFocused" Value="True">
                             <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource BorderFocusBrush}" />
-                            <Setter TargetName="border" Property="BorderThickness" Value="1.5" />
+                            <Setter TargetName="border" Property="BorderThickness" Value="2" />
+                            <Setter TargetName="border" Property="Background" Value="#F8FAFC" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

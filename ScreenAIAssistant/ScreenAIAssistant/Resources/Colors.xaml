@@ -3,40 +3,40 @@
 
     <!-- Bảng màu chủ đạo (Primary & Accents) -->
     <Color x:Key="PrimaryColor">#2563EB</Color>
-    <Color x:Key="PrimaryDarkColor">#1D4ED8</Color>
-    <Color x:Key="PrimaryLightColor">#EFF6FF</Color>
+    <Color x:Key="PrimaryDarkColor">#1E40AF</Color>
+    <Color x:Key="PrimaryLightColor">#DBEAFE</Color>
     <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource PrimaryColor}" />
     <SolidColorBrush x:Key="PrimaryDarkBrush" Color="{StaticResource PrimaryDarkColor}" />
     <SolidColorBrush x:Key="PrimaryLightBrush" Color="{StaticResource PrimaryLightColor}" />
 
-    <!-- Màu nền (Backgrounds) -->
-    <Color x:Key="WindowBgColor">#F8FAFC</Color>
+    <!-- Màu nền có độ tương phản cao (Backgrounds) -->
+    <Color x:Key="WindowBgColor">#EEF2F6</Color>
     <Color x:Key="CardBgColor">#FFFFFF</Color>
     <Color x:Key="SidebarBgColor">#0F172A</Color>
     <SolidColorBrush x:Key="WindowBgBrush" Color="{StaticResource WindowBgColor}" />
     <SolidColorBrush x:Key="CardBgBrush" Color="{StaticResource CardBgColor}" />
     <SolidColorBrush x:Key="SidebarBgBrush" Color="{StaticResource SidebarBgColor}" />
 
-    <!-- Màu văn bản (Typography) -->
+    <!-- Màu văn bản sắc nét (Typography) -->
     <Color x:Key="TextPrimaryColor">#0F172A</Color>
-    <Color x:Key="TextSecondaryColor">#64748B</Color>
-    <Color x:Key="TextMutedColor">#94A3B8</Color>
+    <Color x:Key="TextSecondaryColor">#475569</Color>
+    <Color x:Key="TextMutedColor">#64748B</Color>
     <Color x:Key="TextInverseColor">#FFFFFF</Color>
     <SolidColorBrush x:Key="TextPrimaryBrush" Color="{StaticResource TextPrimaryColor}" />
     <SolidColorBrush x:Key="TextSecondaryBrush" Color="{StaticResource TextSecondaryColor}" />
     <SolidColorBrush x:Key="TextMutedBrush" Color="{StaticResource TextMutedColor}" />
     <SolidColorBrush x:Key="TextInverseBrush" Color="{StaticResource TextInverseColor}" />
 
-    <!-- Màu đường viền (Borders & Dividers) -->
-    <Color x:Key="BorderLightColor">#E2E8F0</Color>
-    <Color x:Key="BorderFocusColor">#3B82F6</Color>
+    <!-- Màu đường viền rõ nét (Borders & Dividers) -->
+    <Color x:Key="BorderLightColor">#CBD5E1</Color>
+    <Color x:Key="BorderFocusColor">#2563EB</Color>
     <SolidColorBrush x:Key="BorderLightBrush" Color="{StaticResource BorderLightColor}" />
     <SolidColorBrush x:Key="BorderFocusBrush" Color="{StaticResource BorderFocusColor}" />
 
     <!-- Màu trạng thái (Status Badges & Alerts) -->
-    <Color x:Key="SuccessColor">#10B981</Color>
-    <Color x:Key="WarningColor">#F59E0B</Color>
-    <Color x:Key="DangerColor">#EF4444</Color>
+    <Color x:Key="SuccessColor">#059669</Color>
+    <Color x:Key="WarningColor">#D97706</Color>
+    <Color x:Key="DangerColor">#DC2626</Color>
     <SolidColorBrush x:Key="SuccessBrush" Color="{StaticResource SuccessColor}" />
     <SolidColorBrush x:Key="WarningBrush" Color="{StaticResource WarningColor}" />
     <SolidColorBrush x:Key="DangerBrush" Color="{StaticResource DangerColor}" />

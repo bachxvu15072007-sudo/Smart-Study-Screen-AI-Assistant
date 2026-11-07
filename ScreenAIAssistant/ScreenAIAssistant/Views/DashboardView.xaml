@@ -6,11 +6,16 @@
              xmlns:vm="clr-namespace:ScreenAIAssistant.ViewModels"
              xmlns:helpers="clr-namespace:ScreenAIAssistant.Helpers"
              mc:Ignorable="d" 
+             UseLayoutRounding="True"
+             SnapsToDevicePixels="True"
+             TextOptions.TextFormattingMode="Display"
+             TextOptions.TextRenderingMode="ClearType"
              d:DataContext="{d:DesignInstance Type=vm:DashboardViewModel}"
-             d:DesignHeight="700" d:DesignWidth="900">
+             d:DesignHeight="720" d:DesignWidth="920">
 
     <UserControl.Resources>
         <helpers:BoolToVisibilityConverter x:Key="BoolToVis" />
+        <helpers:StringToBrushConverter x:Key="HexToBrush" />
     </UserControl.Resources>
 
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
@@ -21,83 +26,110 @@
                 <RowDefinition Height="*" />    <!-- Danh sách môn học + Form CRUD -->
             </Grid.RowDefinitions>
 
-            <!-- 1. TIÊU ĐỀ TRANG & THÔNG BÁO -->
+            <!-- ==================== 1. TIÊU ĐỀ TRANG & THÔNG BÁO ==================== -->
             <StackPanel Grid.Row="0" Margin="0,0,0,20">
                 <TextBlock Text="Tổng Quan &amp; Quản Lý Môn Học"
-                           FontSize="22" FontWeight="Bold"
+                           FontSize="23" FontWeight="ExtraBold"
                            Foreground="{StaticResource TextPrimaryBrush}" />
                 <TextBlock Text="Theo dõi tiến độ học tập toàn diện và quản lý danh mục môn học của bạn"
-                           FontSize="13" Margin="0,4,0,0"
+                           FontSize="13" FontWeight="Medium" Margin="0,4,0,0"
                            Foreground="{StaticResource TextSecondaryBrush}" />
 
                 <!-- Cảnh báo lỗi (Validation) -->
-                <Border Background="#FEE2E2" BorderBrush="#F87171" BorderThickness="1"
-                        CornerRadius="8" Padding="12,8" Margin="0,12,0,0"
+                <Border Background="#FEE2E2" BorderBrush="#DC2626" BorderThickness="1.5"
+                        CornerRadius="8" Padding="14,10" Margin="0,12,0,0"
                         Visibility="{Binding HasError, Converter={StaticResource BoolToVis}}">
-                    <TextBlock Text="{Binding ErrorMessage}" Foreground="#991B1B" FontWeight="SemiBold" FontSize="13" />
+                    <TextBlock Text="{Binding ErrorMessage}" Foreground="#991B1B" FontWeight="Bold" FontSize="13" />
                 </Border>
 
                 <!-- Thông báo trạng thái thành công -->
-                <Border Background="#DCFCE7" BorderBrush="#4ADE80" BorderThickness="1"
-                        CornerRadius="8" Padding="12,8" Margin="0,12,0,0"
-                        Visibility="{Binding StatusMessage, Converter={StaticResource BoolToVis}}">
-                    <TextBlock Text="{Binding StatusMessage}" Foreground="#166534" FontWeight="SemiBold" FontSize="13" />
+                <Border Background="#DCFCE7" BorderBrush="#16A34A" BorderThickness="1.5"
+                        CornerRadius="8" Padding="14,10" Margin="0,12,0,0"
+                        Visibility="{Binding HasStatus, Converter={StaticResource BoolToVis}}">
+                    <TextBlock Text="{Binding StatusMessage}" Foreground="#166534" FontWeight="Bold" FontSize="13" />
                 </Border>
             </StackPanel>
 
-            <!-- 2. KHU VỰC 3 THẺ SỐ LIỆU TỔNG QUAN (WrapPanel co giãn responsive - Tiêu chí 2) -->
-            <WrapPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,10">
-                
+            <!-- ==================== 2. KHU VỰC 3 THẺ SỐ LIỆU TỔNG QUAN (WrapPanel co giãn) ==================== -->
+            <WrapPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,8">
+
                 <!-- Thẻ 1: Tổng số Môn học -->
-                <Border Style="{StaticResource StatCardBorderStyle}">
+                <Border Style="{StaticResource StatCardBorderStyle}" BorderBrush="#93C5FD">
                     <Grid>
-                        <StackPanel VerticalAlignment="Center">
-                            <TextBlock Text="📚 TỔNG SỐ MÔN HỌC" FontSize="11" FontWeight="Bold" Foreground="{StaticResource TextMutedBrush}" />
-                            <TextBlock Text="{Binding TotalSubjects}" FontSize="28" FontWeight="ExtraBold" Foreground="{StaticResource PrimaryBrush}" Margin="0,4,0,0" />
-                            <TextBlock Text="Đang theo học và lưu trữ" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" />
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="6" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Border Grid.Column="0" Background="#2563EB" CornerRadius="10,0,0,10" />
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="16,12,8,12">
+                            <TextBlock Text="TỔNG SỐ MÔN HỌC" FontSize="11" FontWeight="ExtraBold" Foreground="#1E40AF" />
+                            <TextBlock Text="{Binding TotalSubjects}" FontSize="30" FontWeight="ExtraBold" Foreground="#0F172A" Margin="0,2,0,2" />
+                            <TextBlock Text="Đang theo học và lưu trữ" FontSize="12" FontWeight="Medium" Foreground="{StaticResource TextSecondaryBrush}" />
                         </StackPanel>
+                        <Border Grid.Column="2" Width="44" Height="44" CornerRadius="10" Background="#DBEAFE" VerticalAlignment="Center" Margin="0,0,16,0">
+                            <TextBlock Text="📚" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
                     </Grid>
                 </Border>
 
                 <!-- Thẻ 2: Tổng số Ghi chú OCR -->
-                <Border Style="{StaticResource StatCardBorderStyle}">
+                <Border Style="{StaticResource StatCardBorderStyle}" BorderBrush="#6EE7B7">
                     <Grid>
-                        <StackPanel VerticalAlignment="Center">
-                            <TextBlock Text="📝 GHI CHÚ CHỤP MÀN HÌNH" FontSize="11" FontWeight="Bold" Foreground="{StaticResource TextMutedBrush}" />
-                            <TextBlock Text="{Binding TotalNotes}" FontSize="28" FontWeight="ExtraBold" Foreground="#059669" Margin="0,4,0,0" />
-                            <TextBlock Text="Đã trích xuất chữ OCR &amp; AI" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" />
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="6" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Border Grid.Column="0" Background="#059669" CornerRadius="10,0,0,10" />
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="16,12,8,12">
+                            <TextBlock Text="GHI CHÚ CHỤP MÀN HÌNH" FontSize="11" FontWeight="ExtraBold" Foreground="#065F46" />
+                            <TextBlock Text="{Binding TotalNotes}" FontSize="30" FontWeight="ExtraBold" Foreground="#0F172A" Margin="0,2,0,2" />
+                            <TextBlock Text="Đã trích xuất chữ OCR &amp; AI" FontSize="12" FontWeight="Medium" Foreground="{StaticResource TextSecondaryBrush}" />
                         </StackPanel>
+                        <Border Grid.Column="2" Width="44" Height="44" CornerRadius="10" Background="#D1FAE5" VerticalAlignment="Center" Margin="0,0,16,0">
+                            <TextBlock Text="📝" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
                     </Grid>
                 </Border>
 
                 <!-- Thẻ 3: Tổng số Thẻ Flashcard & Tỷ lệ thuộc -->
-                <Border Style="{StaticResource StatCardBorderStyle}">
+                <Border Style="{StaticResource StatCardBorderStyle}" BorderBrush="#C4B5FD">
                     <Grid>
-                        <StackPanel VerticalAlignment="Center">
-                            <TextBlock Text="🎯 THẺ FLASHCARD ÔN TẬP" FontSize="11" FontWeight="Bold" Foreground="{StaticResource TextMutedBrush}" />
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,4,0,0">
-                                <TextBlock Text="{Binding TotalFlashcards}" FontSize="28" FontWeight="ExtraBold" Foreground="#7C3AED" />
-                                <TextBlock Text=" thẻ" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Bottom" Margin="4,0,0,4" />
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="6" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Border Grid.Column="0" Background="#7C3AED" CornerRadius="10,0,0,10" />
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="16,12,8,12">
+                            <TextBlock Text="THẺ FLASHCARD ÔN TẬP" FontSize="11" FontWeight="ExtraBold" Foreground="#5B21B6" />
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,2,0,2">
+                                <TextBlock Text="{Binding TotalFlashcards}" FontSize="30" FontWeight="ExtraBold" Foreground="#0F172A" />
+                                <TextBlock Text=" thẻ" FontSize="14" FontWeight="Bold" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Bottom" Margin="4,0,0,4" />
                             </StackPanel>
-                            <TextBlock FontSize="11" Foreground="{StaticResource TextSecondaryBrush}">
+                            <TextBlock FontSize="12" FontWeight="Medium" Foreground="{StaticResource TextSecondaryBrush}">
                                 <Run Text="Đã thuộc: " />
-                                <Run Text="{Binding MasteredFlashcards, Mode=OneWay}" FontWeight="Bold" Foreground="{StaticResource SuccessBrush}" />
+                                <Run Text="{Binding MasteredFlashcards, Mode=OneWay}" FontWeight="ExtraBold" Foreground="#059669" />
                                 <Run Text=" (" />
-                                <Run Text="{Binding OverallMasteryRate, Mode=OneWay}" FontWeight="Bold" Foreground="{StaticResource SuccessBrush}" />
+                                <Run Text="{Binding OverallMasteryRate, Mode=OneWay}" FontWeight="ExtraBold" Foreground="#059669" />
                                 <Run Text="%)" />
                             </TextBlock>
                         </StackPanel>
+                        <Border Grid.Column="2" Width="44" Height="44" CornerRadius="10" Background="#EDE9FE" VerticalAlignment="Center" Margin="0,0,16,0">
+                            <TextBlock Text="🎯" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
                     </Grid>
                 </Border>
 
             </WrapPanel>
 
-            <!-- 3. KHU VỰC CHI TIẾT: DANH SÁCH MÔN HỌC & FORM CRUD (Grid 2 cột) -->
-            <Grid Grid.Row="2" Margin="0,10,0,0">
+            <!-- ==================== 3. KHU VỰC CHI TIẾT: DANH SÁCH MÔN HỌC & FORM CRUD ==================== -->
+            <Grid Grid.Row="2" Margin="0,8,0,0">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="3*" MinWidth="340" />
-                    <ColumnDefinition Width="16" /> <!-- Khoảng cách giữa 2 cột -->
-                    <ColumnDefinition Width="2*" MinWidth="280" />
+                    <ColumnDefinition Width="3*" MinWidth="360" />
+                    <ColumnDefinition Width="18" /> <!-- Khoảng cách giữa 2 cột -->
+                    <ColumnDefinition Width="2*" MinWidth="300" />
                 </Grid.ColumnDefinitions>
 
                 <!-- CỘT TRÁI: DANH SÁCH MÔN HỌC & TIẾN ĐỘ PROGRESSBAR -->
@@ -110,22 +142,22 @@
                         </Grid.RowDefinitions>
 
                         <!-- Header Danh sách -->
-                        <DockPanel Grid.Row="0" Margin="0,0,0,10">
+                        <DockPanel Grid.Row="0" Margin="0,0,0,12">
                             <TextBlock Text="Danh Sách Môn Học &amp; Tiến Độ"
-                                       FontSize="15" FontWeight="Bold"
+                                       FontSize="16" FontWeight="ExtraBold"
                                        Foreground="{StaticResource TextPrimaryBrush}"
                                        VerticalAlignment="Center" />
                             <Button Content="🔄 Tải lại"
                                     HorizontalAlignment="Right"
                                     Style="{StaticResource SecondaryButtonStyle}"
-                                    Height="32" Padding="10,0" FontSize="12"
+                                    Height="34" Padding="12,0" FontSize="12"
                                     Command="{Binding LoadDashboardDataCommand}" />
                         </DockPanel>
 
                         <!-- Ô Tìm kiếm / Lọc môn học theo từ khóa (Tiêu chí 1) -->
-                        <Grid Grid.Row="1" Margin="0,0,0,12">
+                        <Grid Grid.Row="1" Margin="0,0,0,14">
                             <TextBox Style="{StaticResource ModernTextBoxStyle}"
-                                     Height="34" Padding="28,0,10,0"
+                                     Height="36" Padding="30,0,10,0"
                                      Text="{Binding SearchKeyword, UpdateSourceTrigger=PropertyChanged}"
                                      ToolTip="Tìm kiếm môn học theo tên hoặc mô tả..." />
                             <TextBlock Text="🔍" FontSize="13" VerticalAlignment="Center" Margin="10,0,0,0" IsHitTestVisible="False" />
@@ -141,29 +173,30 @@
                             <ListBox.ItemContainerStyle>
                                 <Style TargetType="ListBoxItem">
                                     <Setter Property="Padding" Value="0" />
-                                    <Setter Property="Margin" Value="0,0,0,10" />
+                                    <Setter Property="Margin" Value="0,0,0,12" />
                                     <Setter Property="Background" Value="Transparent" />
                                     <Setter Property="BorderThickness" Value="0" />
+                                    <Setter Property="Cursor" Value="Hand" />
                                     <Setter Property="Template">
                                         <Setter.Value>
                                             <ControlTemplate TargetType="ListBoxItem">
                                                 <Border x:Name="itemBorder"
-                                                        Background="#F8FAFC"
-                                                        BorderBrush="{StaticResource BorderLightBrush}"
-                                                        BorderThickness="1"
+                                                        Background="#FFFFFF"
+                                                        BorderBrush="#CBD5E1"
+                                                        BorderThickness="1.5"
                                                         CornerRadius="10"
-                                                        Padding="14,12">
+                                                        Padding="16,14">
                                                     <ContentPresenter />
                                                 </Border>
                                                 <ControlTemplate.Triggers>
                                                     <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter TargetName="itemBorder" Property="Background" Value="#F1F5F9" />
-                                                        <Setter TargetName="itemBorder" Property="BorderBrush" Value="{StaticResource PrimaryLightBrush}" />
+                                                        <Setter TargetName="itemBorder" Property="Background" Value="#F8FAFC" />
+                                                        <Setter TargetName="itemBorder" Property="BorderBrush" Value="#3B82F6" />
                                                     </Trigger>
                                                     <Trigger Property="IsSelected" Value="True">
                                                         <Setter TargetName="itemBorder" Property="Background" Value="#EFF6FF" />
-                                                        <Setter TargetName="itemBorder" Property="BorderBrush" Value="{StaticResource PrimaryBrush}" />
-                                                        <Setter TargetName="itemBorder" Property="BorderThickness" Value="1.5" />
+                                                        <Setter TargetName="itemBorder" Property="BorderBrush" Value="#2563EB" />
+                                                        <Setter TargetName="itemBorder" Property="BorderThickness" Value="2" />
                                                     </Trigger>
                                                 </ControlTemplate.Triggers>
                                             </ControlTemplate>
@@ -182,50 +215,53 @@
                                             <RowDefinition Height="Auto" />
                                         </Grid.RowDefinitions>
 
-                                        <!-- Hàng 1: Tên môn học + Màu sắc -->
+                                        <!-- Hàng 1: Tên môn học + Màu sắc (Sửa lỗi bằng HexToBrush Converter) -->
                                         <DockPanel Grid.Row="0">
-                                            <Border Width="12" Height="12" CornerRadius="6"
-                                                    Background="{Binding Subject.ColorHex}"
-                                                    Margin="0,0,8,0" VerticalAlignment="Center" />
+                                            <Border Width="14" Height="14" CornerRadius="7"
+                                                    Background="{Binding Subject.ColorHex, Converter={StaticResource HexToBrush}}"
+                                                    Margin="0,0,10,0" VerticalAlignment="Center" />
                                             <TextBlock Text="{Binding Subject.Name}"
-                                                       FontWeight="Bold" FontSize="14"
+                                                       FontWeight="ExtraBold" FontSize="15"
                                                        Foreground="{StaticResource TextPrimaryBrush}"
                                                        VerticalAlignment="Center" />
-                                            <TextBlock HorizontalAlignment="Right"
-                                                       Text="{Binding NotesCount, StringFormat='📝 {0} ghi chú'}"
-                                                       FontSize="11" Foreground="{StaticResource TextSecondaryBrush}"
-                                                       VerticalAlignment="Center" />
+                                            <Border HorizontalAlignment="Right"
+                                                    Background="#F1F5F9" BorderBrush="#CBD5E1" BorderThickness="1"
+                                                    CornerRadius="6" Padding="8,2" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding NotesCount, Mode=OneWay, StringFormat='📝 {0} ghi chú'}"
+                                                           FontSize="11" FontWeight="SemiBold" Foreground="#334155" />
+                                            </Border>
                                         </DockPanel>
 
                                         <!-- Hàng 2: Mô tả môn học -->
                                         <TextBlock Grid.Row="1"
                                                    Text="{Binding Subject.Description}"
                                                    TextTrimming="CharacterEllipsis"
-                                                   FontSize="12" Foreground="{StaticResource TextSecondaryBrush}"
-                                                   Margin="20,4,0,8" />
+                                                   FontSize="12" FontWeight="Medium" Foreground="{StaticResource TextSecondaryBrush}"
+                                                   Margin="24,6,0,10" />
 
                                         <!-- Hàng 3: Thanh ProgressBar chuẩn WPF (ControlTemplate bo tròn góc) -->
-                                        <Grid Grid.Row="2" Margin="20,0,0,0">
+                                        <Grid Grid.Row="2" Margin="24,0,0,0">
                                             <Grid.RowDefinitions>
                                                 <RowDefinition Height="Auto" />
                                                 <RowDefinition Height="Auto" />
                                             </Grid.RowDefinitions>
                                             <ProgressBar Grid.Row="0"
                                                          Style="{StaticResource ModernRoundedProgressBarStyle}"
+                                                         Foreground="{Binding Subject.ColorHex, Converter={StaticResource HexToBrush}}"
                                                          Value="{Binding MasteryPercentage, Mode=OneWay}"
                                                          Maximum="100" />
-                                            <DockPanel Grid.Row="1" Margin="0,4,0,0">
-                                                <TextBlock FontSize="11" Foreground="{StaticResource TextSecondaryBrush}">
+                                            <DockPanel Grid.Row="1" Margin="0,6,0,0">
+                                                <TextBlock FontSize="12" FontWeight="Medium" Foreground="{StaticResource TextSecondaryBrush}">
                                                     <Run Text="Thẻ nhớ: " />
-                                                    <Run Text="{Binding MasteredCount, Mode=OneWay}" FontWeight="SemiBold" Foreground="{StaticResource SuccessBrush}" />
+                                                    <Run Text="{Binding MasteredCount, Mode=OneWay}" FontWeight="ExtraBold" Foreground="{StaticResource SuccessBrush}" />
                                                     <Run Text="/" />
-                                                    <Run Text="{Binding FlashcardsCount, Mode=OneWay}" />
+                                                    <Run Text="{Binding FlashcardsCount, Mode=OneWay}" FontWeight="Bold" />
                                                     <Run Text=" đã thuộc" />
                                                 </TextBlock>
                                                 <TextBlock HorizontalAlignment="Right"
                                                            Text="{Binding MasteryPercentage, Mode=OneWay, StringFormat='{}{0}%'}"
-                                                           FontSize="11" FontWeight="Bold"
-                                                           Foreground="{StaticResource PrimaryBrush}" />
+                                                           FontSize="12" FontWeight="ExtraBold"
+                                                           Foreground="{StaticResource TextPrimaryBrush}" />
                                             </DockPanel>
                                         </Grid>
                                     </Grid>
@@ -239,7 +275,7 @@
                 <Border Grid.Column="2" Style="{StaticResource CardBorderStyle}">
                     <StackPanel>
                         <!-- Form Header -->
-                        <TextBlock FontSize="15" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,4">
+                        <TextBlock FontSize="16" FontWeight="ExtraBold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,4">
                             <TextBlock.Style>
                                 <Style TargetType="TextBlock">
                                     <Setter Property="Text" Value="➕ Thêm Môn Học Mới" />
@@ -251,36 +287,66 @@
                                 </Style>
                             </TextBlock.Style>
                         </TextBlock>
-                        <TextBlock Text="Nhập thông tin môn học và chọn mã màu hiển thị"
-                                   FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,16" />
+                        <TextBlock Text="Nhập thông tin môn học và chọn mã màu đại diện"
+                                   FontSize="12" FontWeight="Medium" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,16" />
 
                         <!-- Tên Môn Học -->
-                        <TextBlock Text="Tên môn học (*):" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,6" />
+                        <TextBlock Text="Tên môn học (*):" FontSize="12" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,6" />
                         <TextBox Style="{StaticResource ModernTextBoxStyle}"
                                  Text="{Binding NameInput, UpdateSourceTrigger=PropertyChanged}"
-                                 Margin="0,0,0,14" />
+                                 Margin="0,0,0,16" />
 
-                        <!-- Bảng màu sắc gợi ý -->
-                        <TextBlock Text="Màu đại diện:" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,6" />
-                        <ItemsControl ItemsSource="{Binding ColorPalette}" Margin="0,0,0,14">
+                        <!-- Bảng màu sắc gợi ý + Ô xem trước màu đang chọn -->
+                        <DockPanel Margin="0,0,0,8">
+                            <TextBlock Text="Màu đại diện:" FontSize="12" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" VerticalAlignment="Center" />
+                            <Border HorizontalAlignment="Right"
+                                    Background="{Binding ColorInput, Converter={StaticResource HexToBrush}}"
+                                    CornerRadius="6" Padding="10,3"
+                                    BorderBrush="#0F172A" BorderThickness="1">
+                                <TextBlock Text="{Binding ColorInput}" FontSize="11" FontWeight="Bold" Foreground="#FFFFFF" />
+                            </Border>
+                        </DockPanel>
+
+                        <ItemsControl ItemsSource="{Binding ColorPalette}" Margin="0,0,0,16">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
-                                    <StackPanel Orientation="Horizontal" />
+                                    <WrapPanel Orientation="Horizontal" />
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Button Width="26" Height="26" Margin="0,0,8,0"
-                                            Background="{Binding}"
+                                    <Button Width="34" Height="34" Margin="0,0,10,6"
+                                            Background="{Binding Converter={StaticResource HexToBrush}}"
                                             Command="{Binding DataContext.SelectColorCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                             CommandParameter="{Binding}"
+                                            ToolTip="{Binding}"
                                             Cursor="Hand">
                                         <Button.Template>
                                             <ControlTemplate TargetType="Button">
-                                                <Border Background="{TemplateBinding Background}"
-                                                        CornerRadius="13"
-                                                        BorderBrush="{StaticResource BorderLightBrush}"
-                                                        BorderThickness="1.5" />
+                                                <Border x:Name="colorCircle"
+                                                        Background="{TemplateBinding Background}"
+                                                        CornerRadius="17"
+                                                        BorderBrush="#94A3B8"
+                                                        BorderThickness="2">
+                                                    <TextBlock x:Name="hoverIcon"
+                                                               Text="✓"
+                                                               FontSize="14" FontWeight="ExtraBold"
+                                                               Foreground="#FFFFFF"
+                                                               HorizontalAlignment="Center"
+                                                               VerticalAlignment="Center"
+                                                               Visibility="Collapsed" />
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="colorCircle" Property="BorderBrush" Value="#0F172A" />
+                                                        <Setter TargetName="colorCircle" Property="BorderThickness" Value="3" />
+                                                        <Setter TargetName="hoverIcon" Property="Visibility" Value="Visible" />
+                                                    </Trigger>
+                                                    <Trigger Property="IsPressed" Value="True">
+                                                        <Setter TargetName="colorCircle" Property="BorderBrush" Value="#2563EB" />
+                                                        <Setter TargetName="colorCircle" Property="BorderThickness" Value="3.5" />
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
                                             </ControlTemplate>
                                         </Button.Template>
                                     </Button>
@@ -289,23 +355,23 @@
                         </ItemsControl>
 
                         <!-- Mô tả Môn Học -->
-                        <TextBlock Text="Mô tả / Ghi chú môn học:" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,6" />
+                        <TextBlock Text="Mô tả / Ghi chú môn học:" FontSize="12" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,6" />
                         <TextBox Style="{StaticResource ModernTextBoxStyle}"
                                  Text="{Binding DescriptionInput, UpdateSourceTrigger=PropertyChanged}"
-                                 Height="70" TextWrapping="Wrap" AcceptsReturn="True"
-                                 VerticalContentAlignment="Top" Padding="8"
-                                 Margin="0,0,0,18" />
+                                 Height="76" TextWrapping="Wrap" AcceptsReturn="True"
+                                 VerticalContentAlignment="Top" Padding="10,8"
+                                 Margin="0,0,0,20" />
 
                         <!-- Các Nút Hành Động CRUD -->
                         <Button Content="💾 Lưu Môn Học"
                                 Style="{StaticResource PrimaryButtonStyle}"
                                 Command="{Binding SaveSubjectCommand}"
-                                Margin="0,0,0,8" />
+                                Margin="0,0,0,10" />
 
                         <Grid Margin="0,0,0,8">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="8" />
+                                <ColumnDefinition Width="10" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
                             <Button Grid.Column="0" Content="🔄 Làm mới"

@@ -9,8 +9,12 @@
         d:DataContext="{d:DesignInstance Type=vm:MainViewModel}"
         Title="Smart Study &amp; Screen AI Assistant (IT008)"
         MinWidth="980" MinHeight="620"
-        Width="1140" Height="720"
+        Width="1160" Height="740"
         WindowStartupLocation="CenterScreen"
+        UseLayoutRounding="True"
+        SnapsToDevicePixels="True"
+        TextOptions.TextFormattingMode="Display"
+        TextOptions.TextRenderingMode="ClearType"
         Background="{StaticResource WindowBgBrush}">
 
     <Window.Resources>
@@ -24,54 +28,93 @@
 
         <!-- ==================== 1. THANH ĐIỀU HƯỚNG BÊN TRÁI (SIDEBAR) ==================== -->
         <Border DockPanel.Dock="Left"
-                Width="240"
+                Width="250"
                 Background="{StaticResource SidebarBgBrush}">
             <DockPanel LastChildFill="True" Margin="16,20,16,16">
 
                 <!-- Header Logo & Tên ứng dụng -->
                 <StackPanel DockPanel.Dock="Top" Margin="4,0,0,24">
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <TextBlock Text="🎓" FontSize="24" Margin="0,0,10,0" VerticalAlignment="Center" />
+                        <Border Width="40" Height="40" CornerRadius="10" Background="#2563EB" Margin="0,0,12,0">
+                            <TextBlock Text="🎓" FontSize="22" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
                         <StackPanel VerticalAlignment="Center">
-                            <TextBlock Text="ScreenAI" FontSize="18" FontWeight="ExtraBold" Foreground="#FFFFFF" />
-                            <TextBlock Text="Study Assistant" FontSize="11" FontWeight="Medium" Foreground="#94A3B8" />
+                            <TextBlock Text="ScreenAI" FontSize="19" FontWeight="ExtraBold" Foreground="#FFFFFF" />
+                            <TextBlock Text="Smart Study Assistant" FontSize="11" FontWeight="SemiBold" Foreground="#94A3B8" />
                         </StackPanel>
                     </StackPanel>
-                    <Border Height="1" Background="#1E293B" Margin="0,16,0,0" />
+                    <Border Height="1" Background="#1E293B" Margin="0,18,0,0" />
                 </StackPanel>
 
                 <!-- Góc dưới Sidebar: Ô nhập Gemini API Key & Thông tin môn học -->
                 <StackPanel DockPanel.Dock="Bottom" Margin="0,16,0,0">
-                    <Border Background="#1E293B" CornerRadius="10" Padding="12" Margin="0,0,0,12">
+                    <Border Background="#1E293B" BorderBrush="#334155" BorderThickness="1" CornerRadius="10" Padding="12" Margin="0,0,0,12">
                         <StackPanel>
-                            <TextBlock Text="🔑 Gemini API Key" FontSize="12" FontWeight="SemiBold" Foreground="#FFFFFF" Margin="0,0,0,6" />
+                            <TextBlock Text="🔑 Google Gemini API Key" FontSize="12" FontWeight="Bold" Foreground="#FFFFFF" Margin="0,0,0,6" />
                             <TextBox Style="{StaticResource ModernTextBoxStyle}"
-                                     Height="32" FontSize="11"
+                                     Height="34" FontSize="12"
                                      Background="#0F172A" Foreground="#FFFFFF"
-                                     BorderBrush="#334155"
+                                     CaretBrush="#FFFFFF"
+                                     BorderBrush="#475569"
                                      Text="{Binding GeminiApiKey, UpdateSourceTrigger=PropertyChanged}" />
                             <TextBlock Text="Tự động áp dụng cho OCR &amp; Flashcards"
-                                       FontSize="10" Foreground="#64748B" Margin="0,4,0,0" />
+                                       FontSize="10" Foreground="#94A3B8" Margin="0,5,0,0" />
                         </StackPanel>
                     </Border>
-                    <TextBlock Text="Đồ án Lập trình trực quan IT008" FontSize="11" Foreground="#475569" HorizontalAlignment="Center" />
+                    <TextBlock Text="Đồ án Lập trình trực quan IT008" FontSize="11" FontWeight="SemiBold" Foreground="#64748B" HorizontalAlignment="Center" />
                 </StackPanel>
 
                 <!-- Menu các nút điều hướng chuyển đổi 3 màn hình -->
                 <StackPanel DockPanel.Dock="Top">
-                    <TextBlock Text="MENU CHÍNH" FontSize="11" FontWeight="Bold" Foreground="#64748B" Margin="8,0,0,8" />
-                    
+                    <TextBlock Text="PHÂN HỆ CHỨC NĂNG" FontSize="11" FontWeight="Bold" Foreground="#94A3B8" Margin="8,0,0,8" />
+
+                    <!-- Nút Tab 1: Tổng quan & Môn học -->
                     <Button Content="📊  Tổng Quan &amp; Môn Học"
-                            Style="{StaticResource SidebarNavButtonStyle}"
-                            Command="{Binding NavigateToDashboardCommand}" />
+                            Command="{Binding NavigateToDashboardCommand}">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource SidebarNavButtonStyle}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding CurrentTabName}" Value="Dashboard">
+                                        <Setter Property="Background" Value="#2563EB" />
+                                        <Setter Property="Foreground" Value="#FFFFFF" />
+                                        <Setter Property="FontWeight" Value="Bold" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
 
+                    <!-- Nút Tab 2: Ghi chú OCR & AI -->
                     <Button Content="📝  Ghi Chú OCR &amp; AI"
-                            Style="{StaticResource SidebarNavButtonStyle}"
-                            Command="{Binding NavigateToStudyNotesCommand}" />
+                            Command="{Binding NavigateToStudyNotesCommand}">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource SidebarNavButtonStyle}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding CurrentTabName}" Value="StudyNotes">
+                                        <Setter Property="Background" Value="#2563EB" />
+                                        <Setter Property="Foreground" Value="#FFFFFF" />
+                                        <Setter Property="FontWeight" Value="Bold" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
 
+                    <!-- Nút Tab 3: Thẻ Ôn Tập Flashcard -->
                     <Button Content="🗂️  Thẻ Ôn Tập Flashcard"
-                            Style="{StaticResource SidebarNavButtonStyle}"
-                            Command="{Binding NavigateToFlashcardsCommand}" />
+                            Command="{Binding NavigateToFlashcardsCommand}">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource SidebarNavButtonStyle}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding CurrentTabName}" Value="Flashcards">
+                                        <Setter Property="Background" Value="#2563EB" />
+                                        <Setter Property="Foreground" Value="#FFFFFF" />
+                                        <Setter Property="FontWeight" Value="Bold" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
                 </StackPanel>
 
             </DockPanel>
