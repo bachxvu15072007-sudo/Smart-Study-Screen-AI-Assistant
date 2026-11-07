@@ -56,4 +56,18 @@ public interface IStudyRepository
     Task<int> GetMasteredFlashcardsCountAsync();
     Task<List<SubjectProgress>> GetSubjectProgressListAsync();
     #endregion
+
+    #region 5. Quản lý Tài liệu Học tập của Môn học (SubjectDocument - Thành viên 3)
+    Task<List<SubjectDocument>> GetSubjectDocumentsAsync(int subjectId);
+    Task<SubjectDocument> AddSubjectDocumentAsync(SubjectDocument document);
+    Task UpdateSubjectDocumentAsync(SubjectDocument document);
+    Task DeleteSubjectDocumentAsync(int id);
+    #endregion
+
+    #region 6. Quản lý Phiên học & Thống kê Giờ học (StudySession - Thành viên 3)
+    Task<List<StudySession>> GetStudySessionsAsync(int? subjectId = null);
+    Task<StudySession> AddStudySessionAsync(StudySession session);
+    Task DeleteStudySessionAsync(int id);
+    Task<double> GetTotalStudyHoursThisWeekAsync();
+    #endregion
 }
