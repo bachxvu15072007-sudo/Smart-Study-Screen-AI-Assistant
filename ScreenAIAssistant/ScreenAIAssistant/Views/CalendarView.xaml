@@ -1,0 +1,131 @@
+<UserControl x:Class="ScreenAIAssistant.Views.CalendarView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="720" d:DesignWidth="1080"
+             UseLayoutRounding="True"
+             SnapsToDevicePixels="True"
+             TextOptions.TextFormattingMode="Display"
+             TextOptions.TextRenderingMode="ClearType">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                  HorizontalScrollBarVisibility="Disabled"
+                  Padding="32,26"
+                  Background="{DynamicResource AppBackgroundBrush}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- 1. TIÊU ĐỀ MÀN HÌNH -->
+            <StackPanel Grid.Row="0" Margin="0,0,0,22">
+                <TextBlock Text="📅 Lịch Học Tập, Deadline &amp; To-Do List"
+                           Style="{StaticResource PageTitleTextStyle}"/>
+                <TextBlock Text="{Binding SelectedDateText, StringFormat='Ngày đang chọn: {0} — Quản lý hạn nộp bài và danh sách việc cần làm'}"
+                           Style="{StaticResource PageSubtitleTextStyle}"/>
+            </StackPanel>
+
+            <!-- 2. BỐ CỤC KHUNG LỊCH + DEADLINE + TO-DO LIST (ĐỂ TRỐNG CHỜ PROMPT) -->
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="340"/>
+                    <ColumnDefinition Width="18"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="18"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Cột 1: Khung Lịch chọn ngày -->
+                <Border Grid.Column="0" Style="{StaticResource CardBorderStyle}" VerticalAlignment="Top">
+                    <StackPanel>
+                        <TextBlock Text="🗓️ Lịch Tháng"
+                                   Style="{StaticResource SectionTitleTextStyle}"
+                                   Margin="0,0,0,12"/>
+
+                        <Viewbox Stretch="Uniform">
+                            <Calendar SelectedDate="{Binding SelectedDate, Mode=TwoWay}"
+                                      BorderThickness="0"/>
+                        </Viewbox>
+
+                        <Border Style="{StaticResource PlaceholderBorderStyle}"
+                                MinHeight="110"
+                                Margin="0,14,0,0">
+                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <TextBlock Text="Khung Sự Kiện Trong Ngày (Để trống)"
+                                           FontSize="13"
+                                           FontWeight="SemiBold"
+                                           Foreground="{DynamicResource TextPrimaryBrush}"
+                                           HorizontalAlignment="Center"
+                                           Margin="0,0,0,4"/>
+                                <TextBlock Text="Sẵn sàng để bạn viết prompt bổ sung chi tiết lịch học theo ngày."
+                                           Style="{StaticResource MutedTextStyle}"
+                                           TextAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Border>
+
+                <!-- Cột 2: Khung quản lý Deadline -->
+                <Border Grid.Column="2" Style="{StaticResource CardBorderStyle}" MinHeight="480">
+                    <DockPanel>
+                        <StackPanel DockPanel.Dock="Top" Margin="0,0,0,16">
+                            <TextBlock Text="⏰ Danh Sách Deadline"
+                                       Style="{StaticResource SectionTitleTextStyle}"/>
+                            <TextBlock Text="Hạn nộp bài tập, đồ án và lịch kiểm tra"
+                                       Style="{StaticResource MutedTextStyle}"
+                                       Margin="0,4,0,0"/>
+                        </StackPanel>
+
+                        <Border Style="{StaticResource PlaceholderBorderStyle}">
+                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <TextBlock Text="⏰" FontSize="34" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+                                <TextBlock Text="Khung Thêm &amp; Quản Lý Deadline (Đang để trống)"
+                                           FontSize="14.5"
+                                           FontWeight="SemiBold"
+                                           Foreground="{DynamicResource TextPrimaryBrush}"
+                                           HorizontalAlignment="Center"
+                                           Margin="0,0,0,6"/>
+                                <TextBlock Text="Bạn có thể viết prompt để thêm form tạo Deadline (tên bài tập, môn học, ngày giờ hạn chót, mức độ ưu tiên) vào khung này."
+                                           Style="{StaticResource MutedTextStyle}"
+                                           TextAlignment="Center"
+                                           MaxWidth="320"/>
+                            </StackPanel>
+                        </Border>
+                    </DockPanel>
+                </Border>
+
+                <!-- Cột 3: Khung To-Do List -->
+                <Border Grid.Column="4" Style="{StaticResource CardBorderStyle}" MinHeight="480">
+                    <DockPanel>
+                        <StackPanel DockPanel.Dock="Top" Margin="0,0,0,16">
+                            <TextBlock Text="✅ To-Do List (Việc Cần Làm)"
+                                       Style="{StaticResource SectionTitleTextStyle}"/>
+                            <TextBlock Text="Danh sách các đầu việc học tập hàng ngày"
+                                       Style="{StaticResource MutedTextStyle}"
+                                       Margin="0,4,0,0"/>
+                        </StackPanel>
+
+                        <Border Style="{StaticResource PlaceholderBorderStyle}">
+                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <TextBlock Text="☑️" FontSize="34" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+                                <TextBlock Text="Khung To-Do List (Đang để trống)"
+                                           FontSize="14.5"
+                                           FontWeight="SemiBold"
+                                           Foreground="{DynamicResource TextPrimaryBrush}"
+                                           HorizontalAlignment="Center"
+                                           Margin="0,0,0,6"/>
+                                <TextBlock Text="Bạn có thể viết prompt để thêm ô nhập công việc nhanh, checkbox hoàn thành và lọc công việc tại đây."
+                                           Style="{StaticResource MutedTextStyle}"
+                                           TextAlignment="Center"
+                                           MaxWidth="320"/>
+                            </StackPanel>
+                        </Border>
+                    </DockPanel>
+                </Border>
+            </Grid>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

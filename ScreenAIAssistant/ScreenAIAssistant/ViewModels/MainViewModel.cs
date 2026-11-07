@@ -1,59 +1,101 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using ScreenAIAssistant.Helpers;
+using ScreenAIAssistant.Models;
 
 namespace ScreenAIAssistant.ViewModels;
 
 /// <summary>
-/// ViewModel chính của cửa sổ MainWindow.
-/// Điều phối chuyển đổi giữa các màn hình (Dashboard, StudyNotes, Flashcards) và lưu trữ GeminiApiKey.
+/// ViewModel chính của MainWindow.
+/// Điều phối 3 tab (Tổng quan • Môn học • Lịch), mở Không gian Học tập, thu gọn Sidebar và đổi theme Sáng/Tối.
 /// </summary>
 public partial class MainViewModel : ViewModelBase
 {
     private readonly DashboardViewModel _dashboardViewModel;
+    private readonly SubjectsViewModel _subjectsViewModel;
+    private readonly SubjectWorkspaceViewModel _workspaceViewModel;
+    private readonly CalendarViewModel _calendarViewModel;
 
     [ObservableProperty]
     private ViewModelBase _currentView;
 
+    /// <summary>Tab đang chọn trên Sidebar: "Overview" | "Subjects" | "Calendar".</summary>
     [ObservableProperty]
-    private string _currentTabName = "Dashboard";
+    private string _currentTabName = "Overview";
+
+    [ObservableProperty]
+    private bool _isSidebarExpanded = true;
+
+    [ObservableProperty]
+    private bool _isDarkTheme;
+
+    [ObservableProperty]
+    private string _themeIcon = "🌙";
+
+    [ObservableProperty]
+    private string _themeLabel = "Chế độ tối";
 
     [ObservableProperty]
     private string _geminiApiKey = string.Empty;
 
-    public MainViewModel(DashboardViewModel dashboardViewModel)
+    public MainViewModel(
+        DashboardViewModel dashboardViewModel,
+        SubjectsViewModel subjectsViewModel,
+        SubjectWorkspaceViewModel workspaceViewModel,
+        CalendarViewModel calendarViewModel)
     {
         _dashboardViewModel = dashboardViewModel;
+        _subjectsViewModel = subjectsViewModel;
+        _workspaceViewModel = workspaceViewModel;
+        _calendarViewModel = calendarViewModel;
         _currentView = _dashboardViewModel;
+
+        _subjectsViewModel.OpenWorkspaceRequested += OpenWorkspaceAsync;
+        _workspaceViewModel.CloseRequested += NavigateToSubjectsAsync;
     }
 
-    /// <summary>
-    /// Chuyển sang màn hình Tổng quan & Môn học (DashboardView).
-    /// </summary>
     [RelayCommand]
-    public async Task NavigateToDashboardAsync()
+    public async Task NavigateToOverviewAsync()
     {
+        CurrentTabName = "Overview";
         CurrentView = _dashboardViewModel;
-        CurrentTabName = "Dashboard";
         await _dashboardViewModel.LoadDashboardDataAsync();
     }
 
-    /// <summary>
-    /// Chuyển sang màn hình Ghi chú OCR & AI (StudyNotesView - TV1).
-    /// </summary>
     [RelayCommand]
-    public void NavigateToStudyNotes()
+    public async Task NavigateToSubjectsAsync()
     {
-        CurrentTabName = "StudyNotes";
-        StatusMessage = "Đang ở phân hệ Ghi chú OCR & AI (Thành viên 1).";
+        CurrentTabName = "Subjects";
+        CurrentView = _subjectsViewModel;
+        await _subjectsViewModel.LoadSubjectsAsync();
     }
 
-    /// <summary>
-    /// Chuyển sang màn hình Thẻ nhớ Flashcard (FlashcardView - TV2).
-    /// </summary>
     [RelayCommand]
-    public void NavigateToFlashcards()
+    public void NavigateToCalendar()
     {
-        CurrentTabName = "Flashcards";
-        StatusMessage = "Đang ở phân hệ Thẻ ghi nhớ Flashcard (Thành viên 2).";
+        CurrentTabName = "Calendar";
+        CurrentView = _calendarViewModel;
+    }
+
+    private async Task OpenWorkspaceAsync(Subject subject)
+    {
+        CurrentTabName = "Subjects";
+        CurrentView = _workspaceViewModel;
+        await _workspaceViewModel.LoadSubjectAsync(subject);
+    }
+
+    [RelayCommand]
+    public void ToggleSidebar()
+    {
+        IsSidebarExpanded = !IsSidebarExpanded;
+    }
+
+    [RelayCommand]
+    public void ToggleTheme()
+    {
+        IsDarkTheme = !IsDarkTheme;
+        ThemeManager.ApplyTheme(IsDarkTheme);
+        ThemeIcon = IsDarkTheme ? "☀️" : "🌙";
+        ThemeLabel = IsDarkTheme ? "Chế độ sáng" : "Chế độ tối";
     }
 }

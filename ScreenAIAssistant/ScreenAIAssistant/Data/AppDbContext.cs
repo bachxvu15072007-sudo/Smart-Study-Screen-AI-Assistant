@@ -10,8 +10,10 @@ namespace ScreenAIAssistant.Data;
 public class AppDbContext : DbContext
 {
     public DbSet<Subject> Subjects => Set<Subject>();
+    public DbSet<SubjectDocument> SubjectDocuments => Set<SubjectDocument>();
     public DbSet<SnippetNote> SnippetNotes => Set<SnippetNote>();
     public DbSet<Flashcard> Flashcards => Set<Flashcard>();
+    public DbSet<StudySession> StudySessions => Set<StudySession>();
 
     public string DbPath { get; }
 
@@ -47,6 +49,13 @@ public class AppDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
+        // Cấu hình Subject (1 - N) SubjectDocument
+        modelBuilder.Entity<Subject>()
+            .HasMany(s => s.Documents)
+            .WithOne(d => d.Subject)
+            .HasForeignKey(d => d.SubjectId)
+            .OnDelete(DeleteBehavior.Cascade);
+
         // Cấu hình Subject (1 - N) SnippetNote
         modelBuilder.Entity<Subject>()
             .HasMany(s => s.Notes)
@@ -67,13 +76,53 @@ public class AppDbContext : DbContext
             .WithOne(f => f.SnippetNote)
             .HasForeignKey(f => f.SnippetNoteId)
             .OnDelete(DeleteBehavior.SetNull);
+
+        // Cấu hình Subject (1 - N) StudySession
+        modelBuilder.Entity<Subject>()
+            .HasMany(s => s.StudySessions)
+            .WithOne(ss => ss.Subject)
+            .HasForeignKey(ss => ss.SubjectId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 
     /// <summary>
-    /// Nạp dữ liệu mẫu ban đầu (Seed Data) nếu cơ sở dữ liệu còn trống để phục vụ chấm điểm và Demo.
+    /// Đảm bảo bảng SubjectDocuments và StudySessions luôn tồn tại trên cả CSDL cũ và nạp dữ liệu mẫu ban đầu.
     /// </summary>
     public void SeedInitialData()
     {
+        Database.ExecuteSqlRaw(@"
+            CREATE TABLE IF NOT EXISTS SubjectDocuments (
+                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                SubjectId INTEGER NOT NULL,
+                Title TEXT NOT NULL,
+                FileName TEXT NOT NULL,
+                FilePath TEXT NOT NULL,
+                FileType TEXT NOT NULL,
+                FileSizeKb INTEGER NOT NULL DEFAULT 0,
+                PageCount INTEGER NOT NULL DEFAULT 1,
+                ExtractedContent TEXT NOT NULL DEFAULT '',
+                PersonalNote TEXT NOT NULL DEFAULT '',
+                CreatedAt TEXT NOT NULL,
+                FOREIGN KEY (SubjectId) REFERENCES Subjects(Id) ON DELETE CASCADE
+            );");
+
+        Database.ExecuteSqlRaw(@"
+            CREATE TABLE IF NOT EXISTS StudySessions (
+                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                SubjectId INTEGER NOT NULL,
+                SubjectName TEXT NOT NULL DEFAULT '',
+                StartTime TEXT NOT NULL,
+                EndTime TEXT NOT NULL,
+                DurationSeconds INTEGER NOT NULL DEFAULT 0,
+                SessionNote TEXT NOT NULL DEFAULT '',
+                FOREIGN KEY (SubjectId) REFERENCES Subjects(Id) ON DELETE CASCADE
+            );");
+
+        // Dọn dẹp các ghi chú tài liệu mẫu tự sinh trước đây để đảm bảo môn học mới luôn trống
+        Database.ExecuteSqlRaw(@"
+            DELETE FROM SnippetNotes
+            WHERE Title LIKE '[PDF]%' OR Title LIKE '[WORD]%' OR Title LIKE '[PPT]%';");
+
         if (Subjects.Any()) return;
 
         var sub1 = new Subject

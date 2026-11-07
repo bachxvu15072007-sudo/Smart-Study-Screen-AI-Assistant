@@ -1,14 +1,22 @@
 ﻿<Application x:Class="ScreenAIAssistant.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:ScreenAIAssistant">
+             xmlns:local="clr-namespace:ScreenAIAssistant"
+             xmlns:helpers="clr-namespace:ScreenAIAssistant.Helpers"
+             ShutdownMode="OnMainWindowClose">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <!-- Vị trí 0: Bảng màu theme (ThemeManager sẽ thay thế khi đổi Sáng/Tối) -->
                 <ResourceDictionary Source="Resources/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Templates.xaml" />
                 <ResourceDictionary Source="Resources/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
+
+            <helpers:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+            <helpers:StringToBrushConverter x:Key="StringToBrushConverter" />
+            <helpers:StringEqualsToBoolConverter x:Key="StringEqualsToBoolConverter" />
+            <helpers:StringEqualsToVisibilityConverter x:Key="StringEqualsToVisibilityConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

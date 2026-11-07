@@ -7,6 +7,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <NoWarn>$(NoWarn);NU1903</NoWarn>
+    <BaseOutputPath>bin_v2\</BaseOutputPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,5 +19,17 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.2" />
   </ItemGroup>
+
+  <!--
+    Giải pháp chống khóa file ScreenAIAssistant.exe triệt để trên Windows (MSB3021 / MSB3026):
+    1. Tắt mọi tiến trình ScreenAIAssistant.exe đang chạy.
+    2. Nếu tiến trình bị treo (zombie) vẫn giữ khóa file .exe, dùng cơ chế NTFS Rename đổi tên file đang khóa sang .old
+       để giải phóng đường dẫn đích cho MSBuild chép apphost.exe mới vào 100% không bao giờ lỗi.
+  -->
+  <Target Name="UnlockRunningExeBeforeCopy" BeforeTargets="BeforeBuild;PrepareForBuild;CopyFilesToOutputDirectory;_CopyAppHost">
+    <Exec Command="taskkill /F /IM ScreenAIAssistant.exe /T &gt;nul 2&gt;&amp;1 || exit /b 0" IgnoreExitCode="true" />
+    <Exec Command="if exist &quot;$(TargetDir)ScreenAIAssistant.old.exe&quot; del /F /Q &quot;$(TargetDir)ScreenAIAssistant.old.exe&quot; &gt;nul 2&gt;&amp;1" IgnoreExitCode="true" />
+    <Exec Command="if exist &quot;$(TargetDir)ScreenAIAssistant.exe&quot; move /Y &quot;$(TargetDir)ScreenAIAssistant.exe&quot; &quot;$(TargetDir)ScreenAIAssistant.old.exe&quot; &gt;nul 2&gt;&amp;1" IgnoreExitCode="true" />
+  </Target>
 
 </Project>

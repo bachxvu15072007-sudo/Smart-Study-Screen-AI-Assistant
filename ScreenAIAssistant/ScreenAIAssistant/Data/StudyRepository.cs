@@ -247,7 +247,7 @@ public class StudyRepository : IStudyRepository
 
     public async Task<int> GetTotalNotesCountAsync()
     {
-        return await _context.SnippetNotes.CountAsync();
+        return await _context.SnippetNotes.CountAsync() + await _context.SubjectDocuments.CountAsync();
     }
 
     public async Task<int> GetTotalFlashcardsCountAsync()
@@ -263,6 +263,7 @@ public class StudyRepository : IStudyRepository
     public async Task<List<SubjectProgress>> GetSubjectProgressListAsync()
     {
         var subjects = await _context.Subjects
+            .Include(s => s.Documents)
             .Include(s => s.Notes)
             .Include(s => s.Flashcards)
             .AsNoTracking()
@@ -272,10 +273,100 @@ public class StudyRepository : IStudyRepository
         return subjects.Select(s => new SubjectProgress
         {
             Subject = s,
-            NotesCount = s.Notes.Count,
+            NotesCount = s.Documents.Count + s.Notes.Count,
             FlashcardsCount = s.Flashcards.Count,
             MasteredCount = s.Flashcards.Count(f => f.MasteryStatus == MasteryStatus.Mastered)
         }).ToList();
+    }
+
+    #endregion
+
+    #region 5. Quản lý Tài liệu Học tập của Môn học (SubjectDocument - Thành viên 3)
+
+    public async Task<List<SubjectDocument>> GetSubjectDocumentsAsync(int subjectId)
+    {
+        return await _context.SubjectDocuments
+            .AsNoTracking()
+            .Where(d => d.SubjectId == subjectId)
+            .OrderByDescending(d => d.CreatedAt)
+            .ToListAsync();
+    }
+
+    public async Task<SubjectDocument> AddSubjectDocumentAsync(SubjectDocument document)
+    {
+        document.CreatedAt = DateTime.Now;
+        _context.SubjectDocuments.Add(document);
+        await _context.SaveChangesAsync();
+        return document;
+    }
+
+    public async Task UpdateSubjectDocumentAsync(SubjectDocument document)
+    {
+        var existing = await _context.SubjectDocuments.FindAsync(document.Id);
+        if (existing != null)
+        {
+            existing.Title = document.Title;
+            existing.PersonalNote = document.PersonalNote;
+            existing.ExtractedContent = document.ExtractedContent;
+            existing.PageCount = document.PageCount;
+            await _context.SaveChangesAsync();
+        }
+    }
+
+    public async Task DeleteSubjectDocumentAsync(int id)
+    {
+        var existing = await _context.SubjectDocuments.FindAsync(id);
+        if (existing != null)
+        {
+            _context.SubjectDocuments.Remove(existing);
+            await _context.SaveChangesAsync();
+        }
+    }
+
+    #endregion
+
+    #region 6. Quản lý Phiên học & Thống kê Giờ học (StudySession - Thành viên 3)
+
+    public async Task<List<StudySession>> GetStudySessionsAsync(int? subjectId = null)
+    {
+        var query = _context.StudySessions.AsNoTracking().AsQueryable();
+        if (subjectId.HasValue && subjectId.Value > 0)
+        {
+            query = query.Where(ss => ss.SubjectId == subjectId.Value);
+        }
+
+        return await query
+            .OrderByDescending(ss => ss.StartTime)
+            .ToListAsync();
+    }
+
+    public async Task<StudySession> AddStudySessionAsync(StudySession session)
+    {
+        _context.StudySessions.Add(session);
+        await _context.SaveChangesAsync();
+        return session;
+    }
+
+    public async Task DeleteStudySessionAsync(int id)
+    {
+        var existing = await _context.StudySessions.FindAsync(id);
+        if (existing != null)
+        {
+            _context.StudySessions.Remove(existing);
+            await _context.SaveChangesAsync();
+        }
+    }
+
+    public async Task<double> GetTotalStudyHoursThisWeekAsync()
+    {
+        var sevenDaysAgo = DateTime.Now.Date.AddDays(-7);
+        var sessions = await _context.StudySessions
+            .AsNoTracking()
+            .Where(ss => ss.StartTime >= sevenDaysAgo)
+            .ToListAsync();
+
+        int totalSeconds = sessions.Sum(ss => Math.Max(0, ss.DurationSeconds));
+        return Math.Round(totalSeconds / 3600.0, 2);
     }
 
     #endregion

@@ -7,120 +7,157 @@
         xmlns:views="clr-namespace:ScreenAIAssistant.Views"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type=vm:MainViewModel}"
-        Title="Smart Study &amp; Screen AI Assistant (IT008)"
-        MinWidth="980" MinHeight="620"
-        Width="1160" Height="740"
+        Title="Smart Study &amp; Screen AI Assistant"
+        MinWidth="980" MinHeight="640"
+        Width="1220" Height="760"
         WindowStartupLocation="CenterScreen"
         UseLayoutRounding="True"
         SnapsToDevicePixels="True"
         TextOptions.TextFormattingMode="Display"
         TextOptions.TextRenderingMode="ClearType"
-        Background="{StaticResource WindowBgBrush}">
+        Background="{DynamicResource WindowBgBrush}">
 
     <Window.Resources>
-        <!-- DataTemplate ánh xạ tự động ViewModel sang View tương ứng -->
+        <!-- Ánh xạ ViewModel sang View tương ứng -->
         <DataTemplate DataType="{x:Type vm:DashboardViewModel}">
             <views:DashboardView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:SubjectsViewModel}">
+            <views:SubjectsView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:SubjectWorkspaceViewModel}">
+            <views:SubjectWorkspaceView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:CalendarViewModel}">
+            <views:CalendarView />
         </DataTemplate>
     </Window.Resources>
 
     <DockPanel LastChildFill="True">
 
-        <!-- ==================== 1. THANH ĐIỀU HƯỚNG BÊN TRÁI (SIDEBAR) ==================== -->
+        <!-- ==================== 1. THANH TÁC VỤ BÊN TRÁI (CÓ THỂ TẮT / MỞ THU GỌN) ==================== -->
         <Border DockPanel.Dock="Left"
-                Width="250"
-                Background="{StaticResource SidebarBgBrush}">
-            <DockPanel LastChildFill="True" Margin="16,20,16,16">
+                Background="{DynamicResource SidebarBgBrush}"
+                BorderBrush="{DynamicResource SidebarBorderBrush}"
+                BorderThickness="0,0,1,0">
+            <Border.Style>
+                <Style TargetType="Border">
+                    <Setter Property="Width" Value="248"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsSidebarExpanded}" Value="False">
+                            <Setter Property="Width" Value="72"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
 
-                <!-- Header Logo & Tên ứng dụng -->
-                <StackPanel DockPanel.Dock="Top" Margin="4,0,0,24">
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <Border Width="40" Height="40" CornerRadius="10" Background="#2563EB" Margin="0,0,12,0">
-                            <TextBlock Text="🎓" FontSize="22" HorizontalAlignment="Center" VerticalAlignment="Center" />
+            <DockPanel LastChildFill="True" Margin="14,18,14,16">
+
+                <!-- Header: Nút Bật/Tắt Thanh tác vụ (☰) + Tên ứng dụng -->
+                <DockPanel DockPanel.Dock="Top" Margin="0,0,0,22">
+                    <Button DockPanel.Dock="Left"
+                            Content="☰"
+                            Style="{StaticResource IconButtonStyle}"
+                            ToolTip="Bật / Tắt thu gọn thanh tác vụ"
+                            Command="{Binding ToggleSidebarCommand}"/>
+
+                    <StackPanel Orientation="Horizontal"
+                                VerticalAlignment="Center"
+                                Margin="10,0,0,0"
+                                Visibility="{Binding IsSidebarExpanded, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <Border Width="32" Height="32"
+                                CornerRadius="8"
+                                Background="{DynamicResource PrimaryBrush}"
+                                Margin="0,0,10,0">
+                            <TextBlock Text="🎓" FontSize="17" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <StackPanel VerticalAlignment="Center">
-                            <TextBlock Text="ScreenAI" FontSize="19" FontWeight="ExtraBold" Foreground="#FFFFFF" />
-                            <TextBlock Text="Smart Study Assistant" FontSize="11" FontWeight="SemiBold" Foreground="#94A3B8" />
+                            <TextBlock Text="ScreenAI"
+                                       FontSize="16"
+                                       FontWeight="Bold"
+                                       Foreground="{DynamicResource TextPrimaryBrush}"/>
+                            <TextBlock Text="Study Workspace"
+                                       FontSize="11"
+                                       Foreground="{DynamicResource SidebarTextMutedBrush}"/>
                         </StackPanel>
                     </StackPanel>
-                    <Border Height="1" Background="#1E293B" Margin="0,18,0,0" />
-                </StackPanel>
+                </DockPanel>
 
-                <!-- Góc dưới Sidebar: Ô nhập Gemini API Key & Thông tin môn học -->
-                <StackPanel DockPanel.Dock="Bottom" Margin="0,16,0,0">
-                    <Border Background="#1E293B" BorderBrush="#334155" BorderThickness="1" CornerRadius="10" Padding="12" Margin="0,0,0,12">
-                        <StackPanel>
-                            <TextBlock Text="🔑 Google Gemini API Key" FontSize="12" FontWeight="Bold" Foreground="#FFFFFF" Margin="0,0,0,6" />
-                            <TextBox Style="{StaticResource ModernTextBoxStyle}"
-                                     Height="34" FontSize="12"
-                                     Background="#0F172A" Foreground="#FFFFFF"
-                                     CaretBrush="#FFFFFF"
-                                     BorderBrush="#475569"
-                                     Text="{Binding GeminiApiKey, UpdateSourceTrigger=PropertyChanged}" />
-                            <TextBlock Text="Tự động áp dụng cho OCR &amp; Flashcards"
-                                       FontSize="10" Foreground="#94A3B8" Margin="0,5,0,0" />
+                <!-- Góc dưới Thanh tác vụ: Nút chuyển Chế độ Sáng / Tối -->
+                <StackPanel DockPanel.Dock="Bottom" Margin="0,12,0,0">
+                    <Separator Background="{DynamicResource SidebarBorderBrush}" Margin="0,0,0,12"/>
+
+                    <Button Style="{StaticResource SecondaryButtonStyle}"
+                            Height="42"
+                            HorizontalContentAlignment="Center"
+                            ToolTip="Chuyển đổi giao diện Sáng / Tối"
+                            Command="{Binding ToggleThemeCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding ThemeIcon}" FontSize="15" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding ThemeLabel}"
+                                       Margin="10,0,0,0"
+                                       VerticalAlignment="Center"
+                                       Visibility="{Binding IsSidebarExpanded, Converter={StaticResource BoolToVisibilityConverter}}"/>
                         </StackPanel>
-                    </Border>
-                    <TextBlock Text="Đồ án Lập trình trực quan IT008" FontSize="11" FontWeight="SemiBold" Foreground="#64748B" HorizontalAlignment="Center" />
+                    </Button>
                 </StackPanel>
 
-                <!-- Menu các nút điều hướng chuyển đổi 3 màn hình -->
+                <!-- 3 Tab Điều Hướng Chính: Tổng quan • Môn học • Lịch & Deadline -->
                 <StackPanel DockPanel.Dock="Top">
-                    <TextBlock Text="PHÂN HỆ CHỨC NĂNG" FontSize="11" FontWeight="Bold" Foreground="#94A3B8" Margin="8,0,0,8" />
+                    <TextBlock Text="KHÔNG GIAN HỌC TẬP"
+                               FontSize="10.5"
+                               FontWeight="Bold"
+                               Foreground="{DynamicResource SidebarTextMutedBrush}"
+                               Margin="8,0,0,8"
+                               Visibility="{Binding IsSidebarExpanded, Converter={StaticResource BoolToVisibilityConverter}}"/>
 
-                    <!-- Nút Tab 1: Tổng quan & Môn học -->
-                    <Button Content="📊  Tổng Quan &amp; Môn Học"
-                            Command="{Binding NavigateToDashboardCommand}">
-                        <Button.Style>
-                            <Style TargetType="Button" BasedOn="{StaticResource SidebarNavButtonStyle}">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding CurrentTabName}" Value="Dashboard">
-                                        <Setter Property="Background" Value="#2563EB" />
-                                        <Setter Property="Foreground" Value="#FFFFFF" />
-                                        <Setter Property="FontWeight" Value="Bold" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
-                    </Button>
+                    <!-- Tab 1: Tổng quan -->
+                    <RadioButton Style="{StaticResource SidebarNavRadioStyle}"
+                                 ToolTip="Tổng quan (Giờ học, Số môn học, Deadline hôm nay)"
+                                 IsChecked="{Binding CurrentTabName, Converter={StaticResource StringEqualsToBoolConverter}, ConverterParameter=Overview, Mode=OneWay}"
+                                 Command="{Binding NavigateToOverviewCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="📊" FontSize="16" Width="26" TextAlignment="Center" VerticalAlignment="Center"/>
+                            <TextBlock Text="Tổng Quan"
+                                       Margin="8,0,0,0"
+                                       VerticalAlignment="Center"
+                                       Visibility="{Binding IsSidebarExpanded, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                        </StackPanel>
+                    </RadioButton>
 
-                    <!-- Nút Tab 2: Ghi chú OCR & AI -->
-                    <Button Content="📝  Ghi Chú OCR &amp; AI"
-                            Command="{Binding NavigateToStudyNotesCommand}">
-                        <Button.Style>
-                            <Style TargetType="Button" BasedOn="{StaticResource SidebarNavButtonStyle}">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding CurrentTabName}" Value="StudyNotes">
-                                        <Setter Property="Background" Value="#2563EB" />
-                                        <Setter Property="Foreground" Value="#FFFFFF" />
-                                        <Setter Property="FontWeight" Value="Bold" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
-                    </Button>
+                    <!-- Tab 2: Danh sách Môn học -->
+                    <RadioButton Style="{StaticResource SidebarNavRadioStyle}"
+                                 ToolTip="Danh sách Môn học &amp; Không gian Học tập"
+                                 IsChecked="{Binding CurrentTabName, Converter={StaticResource StringEqualsToBoolConverter}, ConverterParameter=Subjects, Mode=OneWay}"
+                                 Command="{Binding NavigateToSubjectsCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="📚" FontSize="16" Width="26" TextAlignment="Center" VerticalAlignment="Center"/>
+                            <TextBlock Text="Môn Học"
+                                       Margin="8,0,0,0"
+                                       VerticalAlignment="Center"
+                                       Visibility="{Binding IsSidebarExpanded, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                        </StackPanel>
+                    </RadioButton>
 
-                    <!-- Nút Tab 3: Thẻ Ôn Tập Flashcard -->
-                    <Button Content="🗂️  Thẻ Ôn Tập Flashcard"
-                            Command="{Binding NavigateToFlashcardsCommand}">
-                        <Button.Style>
-                            <Style TargetType="Button" BasedOn="{StaticResource SidebarNavButtonStyle}">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding CurrentTabName}" Value="Flashcards">
-                                        <Setter Property="Background" Value="#2563EB" />
-                                        <Setter Property="Foreground" Value="#FFFFFF" />
-                                        <Setter Property="FontWeight" Value="Bold" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
-                    </Button>
+                    <!-- Tab 3: Calendar, Deadline & To-Do List -->
+                    <RadioButton Style="{StaticResource SidebarNavRadioStyle}"
+                                 ToolTip="Lịch học tập, Deadline &amp; To-Do List"
+                                 IsChecked="{Binding CurrentTabName, Converter={StaticResource StringEqualsToBoolConverter}, ConverterParameter=Calendar, Mode=OneWay}"
+                                 Command="{Binding NavigateToCalendarCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="📅" FontSize="16" Width="26" TextAlignment="Center" VerticalAlignment="Center"/>
+                            <TextBlock Text="Lịch &amp; Deadline"
+                                       Margin="8,0,0,0"
+                                       VerticalAlignment="Center"
+                                       Visibility="{Binding IsSidebarExpanded, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                        </StackPanel>
+                    </RadioButton>
                 </StackPanel>
 
             </DockPanel>
         </Border>
 
-        <!-- ==================== 2. VÙNG NỘI DUNG CHÍNH (CONTENT AREA) ==================== -->
+        <!-- ==================== 2. VÙNG NỘI DUNG CHÍNH ==================== -->
         <ContentControl Content="{Binding CurrentView}" Focusable="False" />
 
     </DockPanel>
