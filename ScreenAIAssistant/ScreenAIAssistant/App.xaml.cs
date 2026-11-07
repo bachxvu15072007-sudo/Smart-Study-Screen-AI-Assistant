@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using ScreenAIAssistant.Data;
+using ScreenAIAssistant.ViewModels;
 
 namespace ScreenAIAssistant;
 
@@ -24,11 +25,15 @@ public partial class App : Application
         services.AddDbContext<AppDbContext>();
         services.AddScoped<IStudyRepository, StudyRepository>();
 
-        // 2. Cửa sổ chính
+        // 2. Tầng ViewModels
+        services.AddSingleton<DashboardViewModel>();
+        services.AddSingleton<MainViewModel>();
+
+        // 3. Cửa sổ chính
         services.AddTransient<MainWindow>();
     }
 
-    protected override void OnStartup(StartupEventArgs e)
+    protected override async void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
 
@@ -39,6 +44,10 @@ public partial class App : Application
             dbContext.Database.EnsureCreated();
             dbContext.SeedInitialData();
         }
+
+        // Tải trước dữ liệu Dashboard ban đầu
+        var dashboardVm = Services.GetRequiredService<DashboardViewModel>();
+        await dashboardVm.LoadDashboardDataAsync();
 
         var mainWindow = Services.GetRequiredService<MainWindow>();
         mainWindow.Show();

@@ -3,10 +3,82 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:ScreenAIAssistant"
+        xmlns:vm="clr-namespace:ScreenAIAssistant.ViewModels"
+        xmlns:views="clr-namespace:ScreenAIAssistant.Views"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        d:DataContext="{d:DesignInstance Type=vm:MainViewModel}"
+        Title="Smart Study &amp; Screen AI Assistant (IT008)"
+        MinWidth="980" MinHeight="620"
+        Width="1140" Height="720"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource WindowBgBrush}">
 
-    </Grid>
+    <Window.Resources>
+        <!-- DataTemplate ánh xạ tự động ViewModel sang View tương ứng -->
+        <DataTemplate DataType="{x:Type vm:DashboardViewModel}">
+            <views:DashboardView />
+        </DataTemplate>
+    </Window.Resources>
+
+    <DockPanel LastChildFill="True">
+
+        <!-- ==================== 1. THANH ĐIỀU HƯỚNG BÊN TRÁI (SIDEBAR) ==================== -->
+        <Border DockPanel.Dock="Left"
+                Width="240"
+                Background="{StaticResource SidebarBgBrush}">
+            <DockPanel LastChildFill="True" Margin="16,20,16,16">
+
+                <!-- Header Logo & Tên ứng dụng -->
+                <StackPanel DockPanel.Dock="Top" Margin="4,0,0,24">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="🎓" FontSize="24" Margin="0,0,10,0" VerticalAlignment="Center" />
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="ScreenAI" FontSize="18" FontWeight="ExtraBold" Foreground="#FFFFFF" />
+                            <TextBlock Text="Study Assistant" FontSize="11" FontWeight="Medium" Foreground="#94A3B8" />
+                        </StackPanel>
+                    </StackPanel>
+                    <Border Height="1" Background="#1E293B" Margin="0,16,0,0" />
+                </StackPanel>
+
+                <!-- Góc dưới Sidebar: Ô nhập Gemini API Key & Thông tin môn học -->
+                <StackPanel DockPanel.Dock="Bottom" Margin="0,16,0,0">
+                    <Border Background="#1E293B" CornerRadius="10" Padding="12" Margin="0,0,0,12">
+                        <StackPanel>
+                            <TextBlock Text="🔑 Gemini API Key" FontSize="12" FontWeight="SemiBold" Foreground="#FFFFFF" Margin="0,0,0,6" />
+                            <TextBox Style="{StaticResource ModernTextBoxStyle}"
+                                     Height="32" FontSize="11"
+                                     Background="#0F172A" Foreground="#FFFFFF"
+                                     BorderBrush="#334155"
+                                     Text="{Binding GeminiApiKey, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBlock Text="Tự động áp dụng cho OCR &amp; Flashcards"
+                                       FontSize="10" Foreground="#64748B" Margin="0,4,0,0" />
+                        </StackPanel>
+                    </Border>
+                    <TextBlock Text="Đồ án Lập trình trực quan IT008" FontSize="11" Foreground="#475569" HorizontalAlignment="Center" />
+                </StackPanel>
+
+                <!-- Menu các nút điều hướng chuyển đổi 3 màn hình -->
+                <StackPanel DockPanel.Dock="Top">
+                    <TextBlock Text="MENU CHÍNH" FontSize="11" FontWeight="Bold" Foreground="#64748B" Margin="8,0,0,8" />
+                    
+                    <Button Content="📊  Tổng Quan &amp; Môn Học"
+                            Style="{StaticResource SidebarNavButtonStyle}"
+                            Command="{Binding NavigateToDashboardCommand}" />
+
+                    <Button Content="📝  Ghi Chú OCR &amp; AI"
+                            Style="{StaticResource SidebarNavButtonStyle}"
+                            Command="{Binding NavigateToStudyNotesCommand}" />
+
+                    <Button Content="🗂️  Thẻ Ôn Tập Flashcard"
+                            Style="{StaticResource SidebarNavButtonStyle}"
+                            Command="{Binding NavigateToFlashcardsCommand}" />
+                </StackPanel>
+
+            </DockPanel>
+        </Border>
+
+        <!-- ==================== 2. VÙNG NỘI DUNG CHÍNH (CONTENT AREA) ==================== -->
+        <ContentControl Content="{Binding CurrentView}" Focusable="False" />
+
+    </DockPanel>
 </Window>
