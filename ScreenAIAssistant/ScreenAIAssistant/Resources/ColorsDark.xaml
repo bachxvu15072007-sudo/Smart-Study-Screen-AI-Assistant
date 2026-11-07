@@ -1,0 +1,62 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--
+        🌙 BẢNG MÀU CHẾ ĐỘ TỐI (DARK THEME) — HỌC BAN ĐÊM DỊU MẮT
+        • Nền xanh than (#0F172A) thay vì đen tuyền, giảm hiện tượng "nhòe chữ" (halation).
+        • Chữ xám sáng (#E5E7EB) thay vì trắng tinh để không bị chói.
+        • Màu nhấn được làm sáng/giảm bão hòa để dễ đọc trên nền tối.
+        Mọi khóa (x:Key) phải trùng khớp với Colors.xaml.
+    -->
+
+    <SolidColorBrush x:Key="WindowBgBrush" Color="#0F172A" />
+    <SolidColorBrush x:Key="AppBackgroundBrush" Color="#0F172A" />
+    <SolidColorBrush x:Key="CardBgBrush" Color="#1A2436" />
+    <SolidColorBrush x:Key="SurfaceAltBrush" Color="#222E44" />
+    <SolidColorBrush x:Key="SurfaceHoverBrush" Color="#25365A" />
+    <SolidColorBrush x:Key="CanvasAreaBrush" Color="#0B1220" />
+
+    <SolidColorBrush x:Key="CardBorderBrush" Color="#2C3A52" />
+    <SolidColorBrush x:Key="BorderLightBrush" Color="#2C3A52" />
+    <SolidColorBrush x:Key="BorderFocusBrush" Color="#6EA2FF" />
+    <SolidColorBrush x:Key="PlaceholderBorderBrush" Color="#3B4B66" />
+
+    <SolidColorBrush x:Key="SidebarBgBrush" Color="#111A2C" />
+    <SolidColorBrush x:Key="SidebarBorderBrush" Color="#1F2B42" />
+    <SolidColorBrush x:Key="SidebarTextBrush" Color="#CBD5E1" />
+    <SolidColorBrush x:Key="SidebarTextMutedBrush" Color="#64748B" />
+    <SolidColorBrush x:Key="SidebarItemHoverBrush" Color="#1C2840" />
+    <SolidColorBrush x:Key="SidebarItemActiveBrush" Color="#1E3360" />
+    <SolidColorBrush x:Key="SidebarItemActiveTextBrush" Color="#93BBFF" />
+
+    <SolidColorBrush x:Key="TextPrimaryBrush" Color="#E5E7EB" />
+    <SolidColorBrush x:Key="TextSecondaryBrush" Color="#AAB4C3" />
+    <SolidColorBrush x:Key="TextMutedBrush" Color="#6B778A" />
+    <SolidColorBrush x:Key="TextInverseBrush" Color="#FFFFFF" />
+
+    <SolidColorBrush x:Key="PrimaryBrush" Color="#4F86F7" />
+    <SolidColorBrush x:Key="PrimaryDarkBrush" Color="#3A6FDD" />
+    <SolidColorBrush x:Key="PrimaryLightBrush" Color="#1E3360" />
+
+    <SolidColorBrush x:Key="AccentTealBrush" Color="#2DD4BF" />
+    <SolidColorBrush x:Key="AccentTealLightBrush" Color="#123B3A" />
+    <SolidColorBrush x:Key="AccentVioletBrush" Color="#A78BFA" />
+    <SolidColorBrush x:Key="AccentVioletLightBrush" Color="#2A2350" />
+    <SolidColorBrush x:Key="WarningBrush" Color="#FBBF24" />
+    <SolidColorBrush x:Key="WarningLightBrush" Color="#3A2E12" />
+    <SolidColorBrush x:Key="SuccessBrush" Color="#4ADE80" />
+    <SolidColorBrush x:Key="SuccessLightBrush" Color="#143322" />
+    <SolidColorBrush x:Key="DangerBrush" Color="#F87171" />
+    <SolidColorBrush x:Key="DangerLightBrush" Color="#3B1A1D" />
+
+    <SolidColorBrush x:Key="InputBgBrush" Color="#111A2C" />
+    <SolidColorBrush x:Key="InputBorderBrush" Color="#33425C" />
+    <SolidColorBrush x:Key="SecondaryButtonBgBrush" Color="#222E44" />
+    <SolidColorBrush x:Key="SecondaryButtonHoverBrush" Color="#2C3A55" />
+
+    <SolidColorBrush x:Key="BadgeNewBgBrush" Color="#3B1A1D" />
+    <SolidColorBrush x:Key="BadgeNewTextBrush" Color="#FCA5A5" />
+    <SolidColorBrush x:Key="BadgeMasteredBgBrush" Color="#143322" />
+    <SolidColorBrush x:Key="BadgeMasteredTextBrush" Color="#86EFAC" />
+
+</ResourceDictionary>

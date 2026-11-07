@@ -28,6 +28,8 @@ public class Subject
     public DateTime CreatedAt { get; set; } = DateTime.Now;
 
     // Navigation properties
+    public ICollection<SubjectDocument> Documents { get; set; } = new List<SubjectDocument>();
     public ICollection<SnippetNote> Notes { get; set; } = new List<SnippetNote>();
     public ICollection<Flashcard> Flashcards { get; set; } = new List<Flashcard>();
+    public ICollection<StudySession> StudySessions { get; set; } = new List<StudySession>();
 }

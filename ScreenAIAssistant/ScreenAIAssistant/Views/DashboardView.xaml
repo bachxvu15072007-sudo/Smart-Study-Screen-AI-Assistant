@@ -1,0 +1,337 @@
+<UserControl x:Class="ScreenAIAssistant.Views.DashboardView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="720" d:DesignWidth="1080"
+             UseLayoutRounding="True"
+             SnapsToDevicePixels="True"
+             TextOptions.TextFormattingMode="Display"
+             TextOptions.TextRenderingMode="ClearType">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                  HorizontalScrollBarVisibility="Disabled"
+                  Padding="32,26"
+                  Background="{DynamicResource AppBackgroundBrush}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- 1. TIÊU ĐỀ & LỜI CHÀO HỌC TẬP -->
+            <DockPanel Grid.Row="0" Margin="0,0,0,22">
+                <StackPanel DockPanel.Dock="Left">
+                    <TextBlock Text="{Binding GreetingText}"
+                               Style="{StaticResource PageTitleTextStyle}"/>
+                    <TextBlock Text="{Binding TodayText, StringFormat='📅 Hôm nay: {0} — Tổng quan tiến độ học tập của bạn'}"
+                               Style="{StaticResource PageSubtitleTextStyle}"/>
+                </StackPanel>
+
+                <Button DockPanel.Dock="Right"
+                        Content="🔄 Làm mới"
+                        Style="{StaticResource SecondaryButtonStyle}"
+                        Command="{Binding LoadDashboardDataCommand}"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"/>
+            </DockPanel>
+
+            <!-- 2. BA THẺ SỐ LIỆU THỐNG KÊ CHÍNH (GIỜ HỌC • SỐ MÔN HỌC • DEADLINE HÔM NAY) -->
+            <WrapPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,8">
+
+                <!-- Thẻ 1: Thống kê Giờ học -->
+                <Border Style="{StaticResource StatCardBorderStyle}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="5"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Border Grid.Column="0" Background="{DynamicResource AccentTealBrush}" CornerRadius="3" Margin="0,0,14,0"/>
+                        <StackPanel Grid.Column="1">
+                            <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
+                                <Border Background="{DynamicResource AccentTealLightBrush}" CornerRadius="8" Padding="8,5" Margin="0,0,10,0">
+                                    <TextBlock Text="⏱️" FontSize="15" VerticalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="THỐNG KÊ GIỜ HỌC"
+                                           FontSize="12.5"
+                                           FontWeight="Bold"
+                                           Padding="0,2,0,0"
+                                           VerticalAlignment="Center"
+                                           Foreground="{DynamicResource AccentTealBrush}"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,6">
+                                <TextBlock Text="{Binding StudyHoursThisWeek, StringFormat='{}{0:0.#}'}"
+                                           FontSize="32"
+                                           FontWeight="ExtraBold"
+                                           Foreground="{DynamicResource TextPrimaryBrush}"/>
+                                <TextBlock Text=" giờ"
+                                           FontSize="16"
+                                           FontWeight="SemiBold"
+                                           VerticalAlignment="Bottom"
+                                           Margin="4,0,0,5"
+                                           Foreground="{DynamicResource TextSecondaryBrush}"/>
+                            </StackPanel>
+                            <TextBlock Text="{Binding StudyTimeSummaryText}"
+                                       Style="{StaticResource MutedTextStyle}"
+                                       Margin="0,0,0,2"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- Thẻ 2: Số Môn học -->
+                <Border Style="{StaticResource StatCardBorderStyle}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="5"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Border Grid.Column="0" Background="{DynamicResource PrimaryBrush}" CornerRadius="3" Margin="0,0,14,0"/>
+                        <StackPanel Grid.Column="1">
+                            <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
+                                <Border Background="{DynamicResource PrimaryLightBrush}" CornerRadius="8" Padding="8,5" Margin="0,0,10,0">
+                                    <TextBlock Text="📚" FontSize="15" VerticalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="SỐ MÔN HỌC"
+                                           FontSize="12.5"
+                                           FontWeight="Bold"
+                                           Padding="0,2,0,0"
+                                           VerticalAlignment="Center"
+                                           Foreground="{DynamicResource PrimaryBrush}"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,6">
+                                <TextBlock Text="{Binding TotalSubjects}"
+                                           FontSize="32"
+                                           FontWeight="ExtraBold"
+                                           Foreground="{DynamicResource TextPrimaryBrush}"/>
+                                <TextBlock Text=" môn"
+                                           FontSize="16"
+                                           FontWeight="SemiBold"
+                                           VerticalAlignment="Bottom"
+                                           Margin="4,0,0,5"
+                                           Foreground="{DynamicResource TextSecondaryBrush}"/>
+                            </StackPanel>
+                            <TextBlock Text="Đang quản lý trong học kỳ này"
+                                       Style="{StaticResource MutedTextStyle}"
+                                       Margin="0,0,0,2"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- Thẻ 3: Số Deadline cần làm hôm nay -->
+                <Border Style="{StaticResource StatCardBorderStyle}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="5"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Border Grid.Column="0" Background="{DynamicResource WarningBrush}" CornerRadius="3" Margin="0,0,14,0"/>
+                        <StackPanel Grid.Column="1">
+                            <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
+                                <Border Background="{DynamicResource WarningLightBrush}" CornerRadius="8" Padding="8,5" Margin="0,0,10,0">
+                                    <TextBlock Text="⏰" FontSize="15" VerticalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="DEADLINE HÔM NAY"
+                                           FontSize="12.5"
+                                           FontWeight="Bold"
+                                           Padding="0,2,0,0"
+                                           VerticalAlignment="Center"
+                                           Foreground="{DynamicResource WarningBrush}"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,10,0,6">
+                                <TextBlock Text="{Binding TodayDeadlinesCount}"
+                                           FontSize="32"
+                                           FontWeight="ExtraBold"
+                                           Foreground="{DynamicResource TextPrimaryBrush}"/>
+                                <TextBlock Text=" nhiệm vụ"
+                                           FontSize="16"
+                                           FontWeight="SemiBold"
+                                           VerticalAlignment="Bottom"
+                                           Margin="4,0,0,5"
+                                           Foreground="{DynamicResource TextSecondaryBrush}"/>
+                            </StackPanel>
+                            <TextBlock Text="Hạn chót cần hoàn thành trong ngày"
+                                       Style="{StaticResource MutedTextStyle}"
+                                       Margin="0,0,0,2"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+            </WrapPanel>
+
+            <!-- 3. CÁC KHUNG TRỐNG (PLACEHOLDER) ĐỂ CHỈNH SỬA DẦN BẰNG PROMPT -->
+            <Grid Grid.Row="2" Margin="0,4,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1.35*"/>
+                    <ColumnDefinition Width="18"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Khung Trái: Biểu đồ thời gian tự học qua từng ngày -->
+                <Border Grid.Column="0" Style="{StaticResource CardBorderStyle}" MinHeight="380">
+                    <DockPanel>
+                        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,16">
+                            <Border DockPanel.Dock="Right"
+                                    Background="{DynamicResource AccentTealLightBrush}"
+                                    CornerRadius="8"
+                                    Padding="10,4"
+                                    VerticalAlignment="Center">
+                                <TextBlock Text="7 ngày gần nhất"
+                                           FontSize="11.5"
+                                           FontWeight="Bold"
+                                           Foreground="{DynamicResource AccentTealBrush}"/>
+                            </Border>
+                            <StackPanel>
+                                <TextBlock Text="📊 Biểu Đồ Thời Gian Tự Học Qua Từng Ngày"
+                                           Style="{StaticResource SectionTitleTextStyle}"/>
+                                <TextBlock Text="Thống kê trực quan thời lượng tự học mỗi ngày từ chế độ 'Bắt đầu học tập'"
+                                           Style="{StaticResource MutedTextStyle}"
+                                           Margin="0,4,0,0"/>
+                            </StackPanel>
+                        </DockPanel>
+
+                        <!-- KHUNG BIỂU ĐỒ CỘT 7 NGÀY (BAR CHART) -->
+                        <Border DockPanel.Dock="Top"
+                                Background="{DynamicResource SurfaceAltBrush}"
+                                BorderBrush="{DynamicResource CardBorderBrush}"
+                                BorderThickness="1"
+                                CornerRadius="12"
+                                Padding="18,16,18,12"
+                                Margin="0,0,0,14">
+                            <ItemsControl ItemsSource="{Binding DailyStudyChart}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid Rows="1" Columns="7"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel HorizontalAlignment="Center"
+                                                    VerticalAlignment="Bottom"
+                                                    ToolTip="{Binding TooltipText}"
+                                                    Margin="4,0">
+                                            <!-- Số thời gian trên đỉnh cột -->
+                                            <TextBlock Text="{Binding TimeValueText}"
+                                                       FontSize="11.5"
+                                                       FontWeight="Bold"
+                                                       Foreground="{DynamicResource TextPrimaryBrush}"
+                                                       HorizontalAlignment="Center"
+                                                       Margin="0,0,0,6"/>
+
+                                            <!-- Vùng chứa cột chiều cao tối đa 135px -->
+                                            <Grid Height="135" VerticalAlignment="Bottom">
+                                                <Border Width="28"
+                                                        Height="135"
+                                                        CornerRadius="7"
+                                                        Background="{DynamicResource CardBorderBrush}"
+                                                        Opacity="0.28"
+                                                        VerticalAlignment="Bottom"/>
+                                                <Border Width="28"
+                                                        Height="{Binding BarHeight}"
+                                                        CornerRadius="7"
+                                                        Background="{Binding BarColorHex, Converter={StaticResource StringToBrushConverter}}"
+                                                        VerticalAlignment="Bottom"/>
+                                            </Grid>
+
+                                            <!-- Thứ & Ngày bên dưới cột -->
+                                            <TextBlock Text="{Binding DayLabel}"
+                                                       FontSize="12"
+                                                       FontWeight="Bold"
+                                                       Foreground="{DynamicResource TextPrimaryBrush}"
+                                                       HorizontalAlignment="Center"
+                                                       Margin="0,8,0,1"/>
+                                            <TextBlock Text="{Binding DateSubLabel}"
+                                                       FontSize="10.5"
+                                                       Foreground="{DynamicResource TextMutedBrush}"
+                                                       HorizontalAlignment="Center"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Border>
+
+                        <!-- Nhật ký các ca học gần nhất (Ngày, Giờ bắt đầu → Giờ kết thúc) -->
+                        <StackPanel>
+                            <TextBlock Text="🕒 Phiên Tự Học Gần Nhất (Ngày &amp; Giờ Bắt Đầu — Kết Thúc)"
+                                       FontSize="13"
+                                       FontWeight="Bold"
+                                       Foreground="{DynamicResource TextSecondaryBrush}"
+                                       Margin="0,0,0,8"/>
+
+                            <TextBlock Text="Chưa có phiên học nào. Hãy mở một Môn học và bấm '▶️ Bắt đầu học tập' để vẽ biểu đồ thời gian học."
+                                       Style="{StaticResource MutedTextStyle}"
+                                       Visibility="{Binding HasStudySessions, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Invert}"/>
+
+                            <ItemsControl ItemsSource="{Binding RecentStudySessions}"
+                                          Visibility="{Binding HasStudySessions, Converter={StaticResource BoolToVisibilityConverter}}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Background="{DynamicResource SurfaceAltBrush}"
+                                                BorderBrush="{DynamicResource CardBorderBrush}"
+                                                BorderThickness="1"
+                                                CornerRadius="9"
+                                                Padding="12,8"
+                                                Margin="0,0,0,6">
+                                            <DockPanel>
+                                                <Border DockPanel.Dock="Right"
+                                                        Background="{DynamicResource AccentTealLightBrush}"
+                                                        CornerRadius="6"
+                                                        Padding="9,3"
+                                                        VerticalAlignment="Center">
+                                                    <TextBlock Text="{Binding DurationFormatted}"
+                                                               Foreground="{DynamicResource AccentTealBrush}"
+                                                               FontSize="11.5"
+                                                               FontWeight="Bold"/>
+                                                </Border>
+                                                <StackPanel>
+                                                    <TextBlock Text="{Binding SubjectName}"
+                                                               FontSize="13"
+                                                               FontWeight="Bold"
+                                                               Foreground="{DynamicResource TextPrimaryBrush}"/>
+                                                    <TextBlock Text="{Binding ShortTimeRangeText}"
+                                                               FontSize="11.5"
+                                                               Foreground="{DynamicResource TextSecondaryBrush}"
+                                                               Margin="0,2,0,0"/>
+                                                </StackPanel>
+                                            </DockPanel>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </DockPanel>
+                </Border>
+
+                <!-- Khung Phải: Deadline cần làm hôm nay -->
+                <Border Grid.Column="2" Style="{StaticResource CardBorderStyle}" MinHeight="340">
+                    <DockPanel>
+                        <StackPanel DockPanel.Dock="Top" Margin="0,0,0,16">
+                            <TextBlock Text="⏰ Deadline Cần Làm Hôm Nay"
+                                       Style="{StaticResource SectionTitleTextStyle}"/>
+                            <TextBlock Text="Danh sách các bài tập và hạn nộp trong ngày"
+                                       Style="{StaticResource MutedTextStyle}"
+                                       Margin="0,4,0,0"/>
+                        </StackPanel>
+
+                        <Border Style="{StaticResource PlaceholderBorderStyle}">
+                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <TextBlock Text="📌" FontSize="32" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+                                <TextBlock Text="Khung Deadline Hôm Nay (Đang để trống)"
+                                           FontSize="14.5"
+                                           FontWeight="SemiBold"
+                                           Foreground="{DynamicResource TextPrimaryBrush}"
+                                           HorizontalAlignment="Center"
+                                           Margin="0,0,0,6"/>
+                                <TextBlock Text="Bạn có thể viết prompt để liên kết các deadline từ tab Lịch sang hiển thị tại đây."
+                                           Style="{StaticResource MutedTextStyle}"
+                                           TextAlignment="Center"
+                                           MaxWidth="320"/>
+                            </StackPanel>
+                        </Border>
+                    </DockPanel>
+                </Border>
+            </Grid>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

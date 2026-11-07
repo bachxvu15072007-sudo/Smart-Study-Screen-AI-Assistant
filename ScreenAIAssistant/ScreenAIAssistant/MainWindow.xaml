@@ -3,10 +3,162 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:ScreenAIAssistant"
+        xmlns:vm="clr-namespace:ScreenAIAssistant.ViewModels"
+        xmlns:views="clr-namespace:ScreenAIAssistant.Views"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        d:DataContext="{d:DesignInstance Type=vm:MainViewModel}"
+        Title="Smart Study &amp; Screen AI Assistant"
+        MinWidth="980" MinHeight="640"
+        Width="1220" Height="760"
+        WindowStartupLocation="CenterScreen"
+        UseLayoutRounding="True"
+        SnapsToDevicePixels="True"
+        TextOptions.TextFormattingMode="Display"
+        TextOptions.TextRenderingMode="ClearType"
+        Background="{DynamicResource WindowBgBrush}">
 
-    </Grid>
+    <Window.Resources>
+        <!-- Ánh xạ ViewModel sang View tương ứng -->
+        <DataTemplate DataType="{x:Type vm:DashboardViewModel}">
+            <views:DashboardView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:SubjectsViewModel}">
+            <views:SubjectsView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:SubjectWorkspaceViewModel}">
+            <views:SubjectWorkspaceView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:CalendarViewModel}">
+            <views:CalendarView />
+        </DataTemplate>
+    </Window.Resources>
+
+    <DockPanel LastChildFill="True">
+
+        <!-- ==================== 1. THANH TÁC VỤ BÊN TRÁI (CÓ THỂ TẮT / MỞ THU GỌN) ==================== -->
+        <Border DockPanel.Dock="Left"
+                Background="{DynamicResource SidebarBgBrush}"
+                BorderBrush="{DynamicResource SidebarBorderBrush}"
+                BorderThickness="0,0,1,0">
+            <Border.Style>
+                <Style TargetType="Border">
+                    <Setter Property="Width" Value="248"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsSidebarExpanded}" Value="False">
+                            <Setter Property="Width" Value="72"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+
+            <DockPanel LastChildFill="True" Margin="14,18,14,16">
+
+                <!-- Header: Nút Bật/Tắt Thanh tác vụ (☰) + Tên ứng dụng -->
+                <DockPanel DockPanel.Dock="Top" Margin="0,0,0,22">
+                    <Button DockPanel.Dock="Left"
+                            Content="☰"
+                            Style="{StaticResource IconButtonStyle}"
+                            ToolTip="Bật / Tắt thu gọn thanh tác vụ"
+                            Command="{Binding ToggleSidebarCommand}"/>
+
+                    <StackPanel Orientation="Horizontal"
+                                VerticalAlignment="Center"
+                                Margin="10,0,0,0"
+                                Visibility="{Binding IsSidebarExpanded, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <Border Width="32" Height="32"
+                                CornerRadius="8"
+                                Background="{DynamicResource PrimaryBrush}"
+                                Margin="0,0,10,0">
+                            <TextBlock Text="🎓" FontSize="17" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="ScreenAI"
+                                       FontSize="16"
+                                       FontWeight="Bold"
+                                       Foreground="{DynamicResource TextPrimaryBrush}"/>
+                            <TextBlock Text="Study Workspace"
+                                       FontSize="11"
+                                       Foreground="{DynamicResource SidebarTextMutedBrush}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </DockPanel>
+
+                <!-- Góc dưới Thanh tác vụ: Nút chuyển Chế độ Sáng / Tối -->
+                <StackPanel DockPanel.Dock="Bottom" Margin="0,12,0,0">
+                    <Separator Background="{DynamicResource SidebarBorderBrush}" Margin="0,0,0,12"/>
+
+                    <Button Style="{StaticResource SecondaryButtonStyle}"
+                            Height="42"
+                            HorizontalContentAlignment="Center"
+                            ToolTip="Chuyển đổi giao diện Sáng / Tối"
+                            Command="{Binding ToggleThemeCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding ThemeIcon}" FontSize="15" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding ThemeLabel}"
+                                       Margin="10,0,0,0"
+                                       VerticalAlignment="Center"
+                                       Visibility="{Binding IsSidebarExpanded, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+
+                <!-- 3 Tab Điều Hướng Chính: Tổng quan • Môn học • Lịch & Deadline -->
+                <StackPanel DockPanel.Dock="Top">
+                    <TextBlock Text="KHÔNG GIAN HỌC TẬP"
+                               FontSize="10.5"
+                               FontWeight="Bold"
+                               Foreground="{DynamicResource SidebarTextMutedBrush}"
+                               Margin="8,0,0,8"
+                               Visibility="{Binding IsSidebarExpanded, Converter={StaticResource BoolToVisibilityConverter}}"/>
+
+                    <!-- Tab 1: Tổng quan -->
+                    <RadioButton Style="{StaticResource SidebarNavRadioStyle}"
+                                 ToolTip="Tổng quan (Giờ học, Số môn học, Deadline hôm nay)"
+                                 IsChecked="{Binding CurrentTabName, Converter={StaticResource StringEqualsToBoolConverter}, ConverterParameter=Overview, Mode=OneWay}"
+                                 Command="{Binding NavigateToOverviewCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="📊" FontSize="16" Width="26" TextAlignment="Center" VerticalAlignment="Center"/>
+                            <TextBlock Text="Tổng Quan"
+                                       Margin="8,0,0,0"
+                                       VerticalAlignment="Center"
+                                       Visibility="{Binding IsSidebarExpanded, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                        </StackPanel>
+                    </RadioButton>
+
+                    <!-- Tab 2: Danh sách Môn học -->
+                    <RadioButton Style="{StaticResource SidebarNavRadioStyle}"
+                                 ToolTip="Danh sách Môn học &amp; Không gian Học tập"
+                                 IsChecked="{Binding CurrentTabName, Converter={StaticResource StringEqualsToBoolConverter}, ConverterParameter=Subjects, Mode=OneWay}"
+                                 Command="{Binding NavigateToSubjectsCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="📚" FontSize="16" Width="26" TextAlignment="Center" VerticalAlignment="Center"/>
+                            <TextBlock Text="Môn Học"
+                                       Margin="8,0,0,0"
+                                       VerticalAlignment="Center"
+                                       Visibility="{Binding IsSidebarExpanded, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                        </StackPanel>
+                    </RadioButton>
+
+                    <!-- Tab 3: Calendar, Deadline & To-Do List -->
+                    <RadioButton Style="{StaticResource SidebarNavRadioStyle}"
+                                 ToolTip="Lịch học tập, Deadline &amp; To-Do List"
+                                 IsChecked="{Binding CurrentTabName, Converter={StaticResource StringEqualsToBoolConverter}, ConverterParameter=Calendar, Mode=OneWay}"
+                                 Command="{Binding NavigateToCalendarCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="📅" FontSize="16" Width="26" TextAlignment="Center" VerticalAlignment="Center"/>
+                            <TextBlock Text="Lịch &amp; Deadline"
+                                       Margin="8,0,0,0"
+                                       VerticalAlignment="Center"
+                                       Visibility="{Binding IsSidebarExpanded, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                        </StackPanel>
+                    </RadioButton>
+                </StackPanel>
+
+            </DockPanel>
+        </Border>
+
+        <!-- ==================== 2. VÙNG NỘI DUNG CHÍNH ==================== -->
+        <ContentControl Content="{Binding CurrentView}" Focusable="False" />
+
+    </DockPanel>
 </Window>
