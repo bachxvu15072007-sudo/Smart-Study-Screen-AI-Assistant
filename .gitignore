@@ -1,0 +1,31 @@
+## Build and Output directories
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+## Visual Studio & IDE files
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vscode/
+.idea/
+
+## C# and .NET artifacts
+*.DotSettings.user
+*.nupkg
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+## SQLite & local user data
+*.db
+*.db-shm
+*.db-wal
+
+## OS files
+Thumbs.db
+.DS_Store
+desktop.ini
