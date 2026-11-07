@@ -21,7 +21,10 @@ public abstract partial class ViewModelBase : ObservableObject
     public bool HasError => !string.IsNullOrWhiteSpace(ErrorMessage);
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasStatus))]
     private string _statusMessage = string.Empty;
+
+    public bool HasStatus => !string.IsNullOrWhiteSpace(StatusMessage);
 
     /// <summary>
     /// Xóa thông báo lỗi hiện tại.

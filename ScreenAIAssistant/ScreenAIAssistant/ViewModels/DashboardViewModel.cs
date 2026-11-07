@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ScreenAIAssistant.Data;
@@ -8,11 +9,12 @@ namespace ScreenAIAssistant.ViewModels;
 
 /// <summary>
 /// ViewModel quản lý màn hình Tổng quan & Môn học (DashboardView).
-/// Xử lý thống kê 3 thẻ lớn, thanh ProgressBar tiến độ từng môn học và CRUD bảng Subject.
+/// Xử lý thống kê 3 thẻ lớn, thanh ProgressBar tiến độ từng môn học và CRUD + Tìm kiếm bảng Subject.
 /// </summary>
 public partial class DashboardViewModel : ViewModelBase
 {
     private readonly IStudyRepository _repository;
+    private List<SubjectProgress> _allSubjectsCache = new();
 
     #region 1. Dữ liệu Thống kê & Danh sách Môn học
 
@@ -30,6 +32,9 @@ public partial class DashboardViewModel : ViewModelBase
 
     [ObservableProperty]
     private double _overallMasteryRate;
+
+    [ObservableProperty]
+    private string _searchKeyword = string.Empty;
 
     /// <summary>
     /// Danh sách môn học kèm dữ liệu tiến độ để binding lên ListBox/ItemsControl.
@@ -76,6 +81,32 @@ public partial class DashboardViewModel : ViewModelBase
     }
 
     /// <summary>
+    /// Tự động lọc danh sách môn học khi người dùng gõ từ khóa tìm kiếm.
+    /// </summary>
+    partial void OnSearchKeywordChanged(string value)
+    {
+        ApplySearchFilter();
+    }
+
+    private void ApplySearchFilter()
+    {
+        SubjectList.Clear();
+        var query = _allSubjectsCache.AsEnumerable();
+
+        if (!string.IsNullOrWhiteSpace(SearchKeyword))
+        {
+            string kw = SearchKeyword.Trim().ToLower();
+            query = query.Where(s => s.Subject.Name.ToLower().Contains(kw)
+                                  || s.Subject.Description.ToLower().Contains(kw));
+        }
+
+        foreach (var item in query)
+        {
+            SubjectList.Add(item);
+        }
+    }
+
+    /// <summary>
     /// Tự động điền dữ liệu vào Form khi người dùng chọn một môn học trong danh sách.
     /// </summary>
     partial void OnSelectedSubjectProgressChanged(SubjectProgress? value)
@@ -112,12 +143,8 @@ public partial class DashboardViewModel : ViewModelBase
                 ? Math.Round((double)MasteredFlashcards * 100.0 / TotalFlashcards, 1)
                 : 0.0;
 
-            var progressItems = await _repository.GetSubjectProgressListAsync();
-            SubjectList.Clear();
-            foreach (var item in progressItems)
-            {
-                SubjectList.Add(item);
-            }
+            _allSubjectsCache = await _repository.GetSubjectProgressListAsync();
+            ApplySearchFilter();
         }
         catch (Exception ex)
         {
@@ -199,7 +226,7 @@ public partial class DashboardViewModel : ViewModelBase
     }
 
     /// <summary>
-    /// Xóa môn học đang chọn.
+    /// Xóa môn học đang chọn (có hộp thoại xác nhận khi chạy trên giao diện - Tiêu chí 1).
     /// </summary>
     [RelayCommand]
     public async Task DeleteSubjectAsync()
@@ -210,13 +237,29 @@ public partial class DashboardViewModel : ViewModelBase
             return;
         }
 
+        string subjectName = SelectedSubjectProgress.Subject.Name;
+
+        // Hiển thị hộp thoại xác nhận nếu đang chạy trong môi trường cửa sổ WPF
+        if (Application.Current?.MainWindow != null && Application.Current.MainWindow.IsLoaded)
+        {
+            var confirm = MessageBox.Show(
+                $"Bạn có chắc chắn muốn xóa môn học \"{subjectName}\" cùng toàn bộ ghi chú và thẻ Flashcard liên quan không?",
+                "Xác nhận xóa môn học",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning);
+
+            if (confirm != MessageBoxResult.Yes)
+            {
+                return;
+            }
+        }
+
         try
         {
             IsBusy = true;
             ClearError();
 
             int subjectId = SelectedSubjectProgress.Subject.Id;
-            string subjectName = SelectedSubjectProgress.Subject.Name;
 
             await _repository.DeleteSubjectAsync(subjectId);
             StatusMessage = $"Đã xóa môn học \"{subjectName}\" thành công!";

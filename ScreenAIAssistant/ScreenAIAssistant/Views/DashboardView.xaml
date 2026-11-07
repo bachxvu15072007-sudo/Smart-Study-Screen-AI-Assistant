@@ -105,11 +105,12 @@
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
 
                         <!-- Header Danh sách -->
-                        <DockPanel Grid.Row="0" Margin="0,0,0,12">
+                        <DockPanel Grid.Row="0" Margin="0,0,0,10">
                             <TextBlock Text="Danh Sách Môn Học &amp; Tiến Độ"
                                        FontSize="15" FontWeight="Bold"
                                        Foreground="{StaticResource TextPrimaryBrush}"
@@ -121,8 +122,17 @@
                                     Command="{Binding LoadDashboardDataCommand}" />
                         </DockPanel>
 
+                        <!-- Ô Tìm kiếm / Lọc môn học theo từ khóa (Tiêu chí 1) -->
+                        <Grid Grid.Row="1" Margin="0,0,0,12">
+                            <TextBox Style="{StaticResource ModernTextBoxStyle}"
+                                     Height="34" Padding="28,0,10,0"
+                                     Text="{Binding SearchKeyword, UpdateSourceTrigger=PropertyChanged}"
+                                     ToolTip="Tìm kiếm môn học theo tên hoặc mô tả..." />
+                            <TextBlock Text="🔍" FontSize="13" VerticalAlignment="Center" Margin="10,0,0,0" IsHitTestVisible="False" />
+                        </Grid>
+
                         <!-- Danh sách Môn học -->
-                        <ListBox Grid.Row="1"
+                        <ListBox Grid.Row="2"
                                  ItemsSource="{Binding SubjectList}"
                                  SelectedItem="{Binding SelectedSubjectProgress}"
                                  BorderThickness="0"
@@ -202,7 +212,7 @@
                                             </Grid.RowDefinitions>
                                             <ProgressBar Grid.Row="0"
                                                          Style="{StaticResource ModernRoundedProgressBarStyle}"
-                                                         Value="{Binding MasteryPercentage}"
+                                                         Value="{Binding MasteryPercentage, Mode=OneWay}"
                                                          Maximum="100" />
                                             <DockPanel Grid.Row="1" Margin="0,4,0,0">
                                                 <TextBlock FontSize="11" Foreground="{StaticResource TextSecondaryBrush}">
@@ -213,7 +223,7 @@
                                                     <Run Text=" đã thuộc" />
                                                 </TextBlock>
                                                 <TextBlock HorizontalAlignment="Right"
-                                                           Text="{Binding MasteryPercentage, StringFormat='{}{0}%'}"
+                                                           Text="{Binding MasteryPercentage, Mode=OneWay, StringFormat='{}{0}%'}"
                                                            FontSize="11" FontWeight="Bold"
                                                            Foreground="{StaticResource PrimaryBrush}" />
                                             </DockPanel>
