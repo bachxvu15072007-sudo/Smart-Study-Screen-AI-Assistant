@@ -1,9 +1,10 @@
-<UserControl x:Class="ScreenAIAssistant.Views.SubjectWorkspaceView"
+﻿<UserControl x:Class="ScreenAIAssistant.Views.SubjectWorkspaceView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:helpers="clr-namespace:ScreenAIAssistant.Helpers"
+             xmlns:local="clr-namespace:ScreenAIAssistant.Views"
              mc:Ignorable="d"
              d:DesignHeight="780" d:DesignWidth="1280"
              UseLayoutRounding="True"
@@ -81,6 +82,8 @@
                             Content="⬅️ Danh sách Môn học"
                             Style="{StaticResource SecondaryButtonStyle}"
                             Command="{Binding GoBackCommand}"
+                            AutomationProperties.Name="Quay lại danh sách môn học"
+                            AutomationProperties.AutomationId="GoBackButton"
                             Margin="0,0,16,0"
                             VerticalAlignment="Center"/>
 
@@ -92,6 +95,8 @@
                         <!-- Khi CHƯA bắt đầu học: Hiển thị nút Bắt đầu học tập -->
                         <Button Content="▶️ Bắt đầu học tập"
                                 Command="{Binding StartStudySessionCommand}"
+                                AutomationProperties.Name="Bắt đầu học tập"
+                                AutomationProperties.AutomationId="StartStudyButton"
                                 Visibility="{Binding IsStudying, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Invert}"
                                 Background="#0F9D8F"
                                 Foreground="White"
@@ -142,6 +147,8 @@
                                            Margin="0,0,12,0"/>
                                 <Button Content="⏹️ Kết thúc &amp; Lưu giờ học"
                                         Command="{Binding StopStudySessionCommand}"
+                                        AutomationProperties.Name="Kết thúc và lưu giờ học"
+                                        AutomationProperties.AutomationId="StopStudyButton"
                                         Style="{StaticResource DangerButtonStyle}"
                                         MinHeight="30"
                                         Padding="12,4"
@@ -152,11 +159,15 @@
                         <Button Content="📂 + Thêm Tài liệu"
                                 Style="{StaticResource PrimaryButtonStyle}"
                                 Command="{Binding ImportDocumentFileCommand}"
+                                AutomationProperties.Name="Thêm tài liệu"
+                                AutomationProperties.AutomationId="AddDocumentButton"
                                 Margin="0,0,8,0"/>
 
                         <Button Content="↗️ Mở file gốc"
                                 Style="{StaticResource SecondaryButtonStyle}"
-                                Command="{Binding OpenDocumentExternalCommand}"/>
+                                Command="{Binding OpenDocumentExternalCommand}"
+                                AutomationProperties.Name="Mở file gốc bằng ứng dụng ngoài"
+                                AutomationProperties.AutomationId="OpenExternalHeaderButton"/>
                     </WrapPanel>
 
                     <!-- Thông tin Môn học & Trạng thái Ngày giờ bắt đầu - kết thúc -->
@@ -316,6 +327,8 @@
                                 <Button Content="📂 + Chọn File"
                                         Style="{StaticResource PrimaryButtonStyle}"
                                         Command="{Binding ImportDocumentFileCommand}"
+                                        AutomationProperties.Name="Thêm tài liệu (trạng thái trống)"
+                                        AutomationProperties.AutomationId="AddDocumentEmptyStateButton"
                                         HorizontalAlignment="Center"/>
                             </StackPanel>
                         </Border>
@@ -502,155 +515,185 @@
                           Background="Transparent"
                           Cursor="SizeWE"/>
 
-            <!-- VÙNG CHÍNH: BẢNG BLUEPRINT HỌC TẬP (CHỨA TÀI LIỆU & CÁC NOTE PINNED KÉO THẢ TỰ DO) -->
-            <Border Grid.Column="2" Style="{StaticResource CardBorderStyle}" Padding="16">
-                <DockPanel>
-                    <!-- Thanh điều khiển Bảng Blueprint -->
-                    <Border DockPanel.Dock="Top"
-                            Background="{DynamicResource SurfaceAltBrush}"
-                            BorderBrush="{DynamicResource CardBorderBrush}"
-                            BorderThickness="1"
-                            CornerRadius="10"
-                            Padding="14,8"
-                            Margin="0,0,0,12">
-                        <DockPanel>
-                            <WrapPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
-                                <!-- Nút bấm mở cửa sổ Popup điền Mặt trước & Mặt sau -->
-                                <Button Content="📌 + Ghim Flashcard / Note"
-                                        Style="{StaticResource PrimaryButtonStyle}"
-                                        MinHeight="32" Padding="14,5" FontSize="12"
-                                        Command="{Binding TogglePinFormCommand}"
-                                        Margin="0,0,10,0"/>
+            <!-- ========================================================================= -->
+            <!-- VÙNG CHÍNH: KHÔNG GIAN HỌC TẬP SPLIT-PANE HIỆN ĐẠI                         -->
+            <!-- (Cột 0: Trình đọc tài liệu siêu nét • Cột 2: Study Margin & Flashcard)    -->
+            <!-- ========================================================================= -->
+            <Grid Grid.Column="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1.75*" MinWidth="480"/>
+                    <ColumnDefinition Width="8"/>
+                    <ColumnDefinition Width="1.0*" MinWidth="320"/>
+                </Grid.ColumnDefinitions>
 
-                                <Button Content="◀"
-                                        Style="{StaticResource SecondaryButtonStyle}"
-                                        MinHeight="32" Width="34" Padding="0"
-                                        Command="{Binding PreviousCanvasPageCommand}"
-                                        Margin="0,0,6,0"/>
-                                <Border Background="{DynamicResource CardBgBrush}"
-                                        BorderBrush="{DynamicResource CardBorderBrush}"
-                                        BorderThickness="1"
-                                        CornerRadius="6"
-                                        Padding="12,5"
-                                        Margin="0,0,6,0"
-                                        VerticalAlignment="Center">
-                                    <TextBlock Text="{Binding PageIndicatorText}"
-                                               FontSize="12"
-                                               FontWeight="Bold"
-                                               Foreground="{DynamicResource TextPrimaryBrush}"/>
-                                </Border>
-                                <Button Content="▶"
-                                        Style="{StaticResource SecondaryButtonStyle}"
-                                        MinHeight="32" Width="34" Padding="0"
-                                        Command="{Binding NextCanvasPageCommand}"
-                                        Margin="0,0,10,0"/>
+                <!-- PHẦN 1: TRÌNH ĐỌC TÀI LIỆU SIÊU NÉT (HIGH-RES DOCUMENT READER) -->
+                <Border Grid.Column="0" Style="{StaticResource CardBorderStyle}" Padding="16">
+                    <DockPanel>
+                        <!-- Thanh điều khiển Đọc tài liệu: Trang, Zoom, Fit Width, Mở ngoài, Xóa -->
+                        <Border DockPanel.Dock="Top"
+                                Background="{DynamicResource SurfaceAltBrush}"
+                                BorderBrush="{DynamicResource CardBorderBrush}"
+                                BorderThickness="1"
+                                CornerRadius="10"
+                                Padding="12,8"
+                                Margin="0,0,0,12">
+                            <DockPanel>
+                                <WrapPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Button Content="◀"
+                                            Style="{StaticResource SecondaryButtonStyle}"
+                                            MinHeight="30" Width="32" Padding="0"
+                                            Command="{Binding PreviousCanvasPageCommand}"
+                                            ToolTip="Trang trước"
+                                            Margin="0,0,4,0"/>
+                                    <Border Background="{DynamicResource CardBgBrush}"
+                                            BorderBrush="{DynamicResource CardBorderBrush}"
+                                            BorderThickness="1"
+                                            CornerRadius="6"
+                                            Padding="10,4"
+                                            Margin="0,0,4,0"
+                                            VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding PageIndicatorText}"
+                                                   FontSize="12"
+                                                   FontWeight="Bold"
+                                                   Foreground="{DynamicResource TextPrimaryBrush}"/>
+                                    </Border>
+                                    <Button Content="▶"
+                                            Style="{StaticResource SecondaryButtonStyle}"
+                                            MinHeight="30" Width="32" Padding="0"
+                                            Command="{Binding NextCanvasPageCommand}"
+                                            ToolTip="Trang sau"
+                                            Margin="0,0,8,0"/>
 
-                                <Button Content="➖"
-                                        Style="{StaticResource SecondaryButtonStyle}"
-                                        MinHeight="32" Width="32" Padding="0"
-                                        Command="{Binding ZoomOutCanvasCommand}"
-                                        Margin="0,0,4,0"/>
-                                <Button Content="{Binding CanvasZoomPercentText}"
-                                        Style="{StaticResource SecondaryButtonStyle}"
-                                        MinHeight="32" Padding="10,4" FontSize="11.5"
-                                        Command="{Binding ResetCanvasZoomCommand}"
-                                        Margin="0,0,4,0"/>
-                                <Button Content="➕"
-                                        Style="{StaticResource SecondaryButtonStyle}"
-                                        MinHeight="32" Width="32" Padding="0"
-                                        Command="{Binding ZoomInCanvasCommand}"
-                                        Margin="0,0,10,0"/>
+                                    <Button Content="➖"
+                                            Style="{StaticResource SecondaryButtonStyle}"
+                                            MinHeight="30" Width="30" Padding="0"
+                                            Command="{Binding ZoomOutCanvasCommand}"
+                                            ToolTip="Thu nhỏ"
+                                            Margin="0,0,3,0"/>
+                                    <Button Content="{Binding CanvasZoomPercentText}"
+                                            Style="{StaticResource SecondaryButtonStyle}"
+                                            MinHeight="30" Padding="8,4" FontSize="11"
+                                            Command="{Binding ResetCanvasZoomCommand}"
+                                            ToolTip="Đặt lại 100%"
+                                            Margin="0,0,3,0"/>
+                                    <Button Content="➕"
+                                            Style="{StaticResource SecondaryButtonStyle}"
+                                            MinHeight="30" Width="30" Padding="0"
+                                            Command="{Binding ZoomInCanvasCommand}"
+                                            ToolTip="Phóng to"
+                                            Margin="0,0,6,0"/>
 
-                                <Button Content="🗑️"
-                                        Style="{StaticResource DangerButtonStyle}"
-                                        MinHeight="32" Width="34" Padding="0"
-                                        ToolTip="Xóa tài liệu đang mở"
-                                        Command="{Binding DeleteSelectedDocumentCommand}"/>
-                            </WrapPanel>
+                                    <Button Content="↔ Fit"
+                                            Style="{StaticResource SecondaryButtonStyle}"
+                                            MinHeight="30" Padding="8,4" FontSize="11"
+                                            Command="{Binding FitWidthCanvasCommand}"
+                                            ToolTip="Vừa chiều ngang (125%)"
+                                            Margin="0,0,6,0"/>
 
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                <Border Background="{Binding SelectedDocument.BadgeColor, Converter={StaticResource StringToBrushConverter}, FallbackValue=#2F6FEB}"
-                                        CornerRadius="5"
-                                        Padding="8,2"
-                                        Margin="0,0,8,0">
-                                    <TextBlock Text="{Binding SelectedDocument.BadgeText, FallbackValue='📐 BLUEPRINT'}"
-                                               Foreground="White"
-                                               FontSize="11"
-                                               FontWeight="Bold"/>
-                                </Border>
-                                <TextBlock Text="{Binding SelectedDocument.Title, FallbackValue='Bảng Blueprint Học Tập &amp; Ghim Note'}"
-                                           FontSize="13.5"
-                                           FontWeight="SemiBold"
-                                           Foreground="{DynamicResource TextPrimaryBrush}"
-                                           TextTrimming="CharacterEllipsis"/>
-                            </StackPanel>
-                        </DockPanel>
-                    </Border>
+                                    <Button Content="↗"
+                                            Style="{StaticResource SecondaryButtonStyle}"
+                                            MinHeight="30" Width="30" Padding="0"
+                                            ToolTip="Mở bằng ứng dụng mặc định trên máy"
+                                            Command="{Binding OpenDocumentExternalCommand}"
+                                 AutomationProperties.Name="Mở file gốc bằng ứng dụng ngoài"
+                                 AutomationProperties.AutomationId="OpenExternalButton"
+                                            Margin="0,0,6,0"/>
 
-                    <!-- MẶT BẢNG BLUEPRINT HỌC TẬP (CÙNG MÀU VỚI MÀU NỀN + CON TRỎ BÀN TAY KÉO BẢNG + CTRL LĂN CHUỘT ZOOM) -->
-                    <Border Background="{DynamicResource AppBackgroundBrush}"
-                            BorderBrush="{DynamicResource CardBorderBrush}"
-                            BorderThickness="1.5"
-                            CornerRadius="12"
-                            ClipToBounds="True">
-                        <Grid Background="{StaticResource BlueprintGridBrush}">
+                                    <Button Content="🗑️"
+                                            Style="{StaticResource DangerButtonStyle}"
+                                            MinHeight="30" Width="30" Padding="0"
+                                            ToolTip="Xóa tài liệu này"
+                                            Command="{Binding DeleteSelectedDocumentCommand}"
+                                            AutomationProperties.Name="Xóa tài liệu đang chọn"
+                                            AutomationProperties.AutomationId="DeleteDocumentButton"/>
+                                </WrapPanel>
+
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Border Background="{Binding SelectedDocument.BadgeColor, Converter={StaticResource StringToBrushConverter}, FallbackValue=#2F6FEB}"
+                                            CornerRadius="5"
+                                            Padding="7,2"
+                                            Margin="0,0,8,0">
+                                        <TextBlock Text="{Binding SelectedDocument.BadgeText, FallbackValue='📄 TÀI LIỆU'}"
+                                                   Foreground="White"
+                                                   FontSize="11"
+                                                   FontWeight="Bold"/>
+                                    </Border>
+                                    <TextBlock Text="{Binding SelectedDocument.Title, FallbackValue='Trình đọc Tài liệu Siêu Nét'}"
+                                               FontSize="13"
+                                               FontWeight="SemiBold"
+                                               Foreground="{DynamicResource TextPrimaryBrush}"
+                                               TextTrimming="CharacterEllipsis"
+                                               MaxWidth="240"/>
+                                </StackPanel>
+                            </DockPanel>
+                        </Border>
+
+                        <!-- KHUNG TRÌNH ĐỌC TÀI LIỆU CHÍNH (BÀN TAY KÉO DI CHUYỂN TÀI LIỆU + CTRL LĂN CHUỘT ZOOM) -->
+                        <Border Background="{DynamicResource AppBackgroundBrush}"
+                                BorderBrush="{DynamicResource CardBorderBrush}"
+                                BorderThickness="1"
+                                CornerRadius="10"
+                                ClipToBounds="True">
                             <ScrollViewer HorizontalScrollBarVisibility="Auto"
                                           VerticalScrollBarVisibility="Auto"
-                                          Padding="12"
+                                          Padding="16"
                                           Cursor="Hand"
-                                          helpers:CanvasDragHelper.EnableBoardPanAndZoom="True">
-                                <Canvas Width="1480"
-                                        Height="{Binding BoardCanvasHeight, FallbackValue=1040}"
-                                        Background="Transparent"
-                                        HorizontalAlignment="Left"
-                                        VerticalAlignment="Top">
-                                    <Canvas.LayoutTransform>
-                                        <ScaleTransform ScaleX="{Binding CanvasZoom}"
-                                                        ScaleY="{Binding CanvasZoom}"/>
-                                    </Canvas.LayoutTransform>
-
-                                    <!-- =============================================================== -->
-                                    <!-- 1. KHUNG TÀI LIỆU ĐẶT TRÊN MẶT BẢNG BLUEPRINT                   -->
-                                    <!-- =============================================================== -->
-                                    <Border Canvas.Left="28"
-                                            Canvas.Top="24"
-                                            Width="710"
-                                            MinHeight="{Binding CurrentCanvasPage.CanvasHeight, FallbackValue=880}"
+                                          helpers:CanvasDragHelper.EnableBoardPanAndZoom="True"
+                                          AutomationProperties.Name="Vùng xem tài liệu"
+                                          AutomationProperties.AutomationId="DocumentViewerArea"
+                                          ToolTip="Bàn tay di chuyển: Giữ chuột trái kéo trang • Phóng to/Thu nhỏ: Giữ phím Ctrl + Lăn chuột">
+                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Cursor="Hand">
+                                    <!-- Khi chưa có tài liệu nào được chọn -->
+                                    <Border Width="600"
+                                            Padding="40,60"
                                             Background="#FFFFFF"
                                             BorderBrush="{DynamicResource CardBorderBrush}"
-                                            BorderThickness="1.5"
-                                            CornerRadius="6">
-                                    <Border.Effect>
-                                        <DropShadowEffect Color="#000000" BlurRadius="22" ShadowDepth="6" Opacity="0.45"/>
-                                    </Border.Effect>
-                                    <Grid>
-                                        <!-- Khi môn học chưa có tài liệu -->
-                                        <StackPanel HorizontalAlignment="Center"
-                                                    VerticalAlignment="Center"
-                                                    MaxWidth="420"
-                                                    Margin="24"
-                                                    Visibility="{Binding HasDocuments, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Invert}">
-                                            <TextBlock Text="📄 Đặt Tài Liệu Lên Bảng Blueprint"
+                                            BorderThickness="1"
+                                            CornerRadius="8"
+                                            Margin="0,30,0,0"
+                                            HorizontalAlignment="Center"
+                                            Visibility="{Binding HasDocuments, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Invert}">
+                                        <StackPanel HorizontalAlignment="Center">
+                                            <TextBlock Text="📄" FontSize="42" HorizontalAlignment="Center" Margin="0,0,0,12"/>
+                                            <TextBlock Text="Chưa có tài liệu học tập"
                                                        FontSize="17"
                                                        FontWeight="Bold"
                                                        Foreground="#0F172A"
                                                        HorizontalAlignment="Center"
                                                        Margin="0,0,0,8"/>
-                                            <TextBlock Text="Hãy bấm nút bên dưới để mở file PDF, Word (.docx) hoặc Slide PowerPoint (.pptx) lên mặt bảng Blueprint. Bạn có thể bấm nút '📌 + Ghim Flashcard / Note' để đính các tờ Note lưu ý và kéo thả tự do quanh tài liệu."
+                                            <TextBlock Text="Bấm nút 'Thêm tài liệu' ở cột bên trái hoặc nút bên dưới để nạp file PDF, Word (.docx), hoặc Slide PowerPoint (.pptx)."
                                                        FontSize="13"
                                                        Foreground="#475569"
                                                        TextAlignment="Center"
                                                        TextWrapping="Wrap"
-                                                       Margin="0,0,0,16"/>
+                                                       Margin="0,0,0,20"/>
                                             <Button Content="📂 + Thêm Tài liệu (PDF / Word / PPT)"
                                                     Style="{StaticResource PrimaryButtonStyle}"
                                                     Command="{Binding ImportDocumentFileCommand}"
+                                                    AutomationProperties.Name="Thêm tài liệu (bảng trống)"
+                                                    AutomationProperties.AutomationId="AddDocumentBoardEmptyButton"
                                                     HorizontalAlignment="Center"/>
                                         </StackPanel>
+                                    </Border>
 
-                                        <!-- Khi đã có tài liệu đang mở -->
-                                        <DockPanel LastChildFill="True"
-                                                   Visibility="{Binding HasDocuments, Converter={StaticResource BoolToVisibilityConverter}}">
+                                    <!-- Khi đã có tài liệu: Trang tài liệu với độ rộng 920px và Ultra-HD render -->
+                                    <Border Width="{Binding CurrentCanvasPage.CanvasWidth, FallbackValue=920}"
+                                            Background="#FFFFFF"
+                                            BorderBrush="{DynamicResource CardBorderBrush}"
+                                            BorderThickness="1.5"
+                                            CornerRadius="6"
+                                            HorizontalAlignment="Center"
+                                            Cursor="Hand"
+                                            Visibility="{Binding HasDocuments, Converter={StaticResource BoolToVisibilityConverter}}">
+                                        <Border.LayoutTransform>
+                                            <ScaleTransform ScaleX="{Binding CanvasZoom}"
+                                                            ScaleY="{Binding CanvasZoom}"/>
+                                        </Border.LayoutTransform>
+                                        <Border.Effect>
+                                            <DropShadowEffect Color="#000000" BlurRadius="22" ShadowDepth="5" Opacity="0.38"/>
+                                        </Border.Effect>
+
+                                        <DockPanel LastChildFill="True">
                                             <Border DockPanel.Dock="Top"
                                                     Background="{Binding CurrentCanvasPage.AccentColor, Converter={StaticResource StringToBrushConverter}, FallbackValue=#2F6FEB}"
                                                     CornerRadius="4,4,0,0"
@@ -670,15 +713,18 @@
                                                 </DockPanel>
                                             </Border>
 
-                                            <StackPanel Margin="20,16">
+                                            <StackPanel Margin="18,16" Cursor="Hand">
                                                 <Image Source="{Binding CurrentCanvasPage.PageImage}"
                                                        Stretch="Uniform"
                                                        HorizontalAlignment="Center"
                                                        RenderOptions.BitmapScalingMode="HighQuality"
+                                                       RenderOptions.EdgeMode="Aliased"
+                                                       SnapsToDevicePixels="True"
+                                                       Cursor="Hand"
                                                        Visibility="{Binding CurrentCanvasPage.HasPageImage, Converter={StaticResource BoolToVisibilityConverter}}"
                                                        Margin="0,0,0,12"/>
 
-                                                <StackPanel Visibility="{Binding CurrentCanvasPage.HasTextContent, Converter={StaticResource BoolToVisibilityConverter}}">
+                                                <StackPanel Visibility="{Binding CurrentCanvasPage.HasTextContent, Converter={StaticResource BoolToVisibilityConverter}}" Cursor="Hand">
                                                     <TextBlock Text="{Binding CurrentCanvasPage.Title}"
                                                                FontSize="17"
                                                                FontWeight="Bold"
@@ -693,438 +739,201 @@
                                                              FontSize="14"
                                                              Foreground="#1E293B"
                                                              TextWrapping="Wrap"
-                                                             AcceptsReturn="True"/>
+                                                             AcceptsReturn="True"
+                                                             Cursor="Hand"/>
                                                 </StackPanel>
                                             </StackPanel>
                                         </DockPanel>
-                                    </Grid>
-                                </Border>
-
-                                <!-- =============================================================== -->
-                                <!-- 2. LỚP CÁC THẺ FLASHCARD / NOTE PINNED KÉO THẢ KHẮP BLUEPRINT   -->
-                                <!-- =============================================================== -->
-                                <ItemsControl Canvas.Left="0"
-                                              Canvas.Top="0"
-                                              Width="1480"
-                                              Height="{Binding BoardCanvasHeight, FallbackValue=1040}"
-                                              ItemsSource="{Binding PinnedFlashcards}">
-                                    <ItemsControl.ItemsPanel>
-                                        <ItemsPanelTemplate>
-                                            <Canvas Background="Transparent"/>
-                                        </ItemsPanelTemplate>
-                                    </ItemsControl.ItemsPanel>
-
-                                    <ItemsControl.ItemContainerStyle>
-                                        <Style TargetType="ContentPresenter">
-                                            <Setter Property="Canvas.Left" Value="{Binding CanvasX, Mode=TwoWay}"/>
-                                            <Setter Property="Canvas.Top" Value="{Binding CanvasY, Mode=TwoWay}"/>
-                                        </Style>
-                                    </ItemsControl.ItemContainerStyle>
-
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
-                                            <!-- Thiết kế tờ giấy Note Pinned có đinh ghim 📌 ở đỉnh, nắm kéo đi khắp bảng -->
-                                            <Grid Width="265"
-                                                  helpers:CanvasDragHelper.EnableDrag="True"
-                                                  Cursor="SizeAll"
-                                                  ToolTip="Nắm chuột kéo tờ Note này đi bất kỳ đâu trên Bảng Blueprint">
-
-                                                <!-- Thân tờ giấy Note ghim -->
-                                                <Border Margin="0,10,0,0"
-                                                        Background="{Binding NotePaperColorHex, Converter={StaticResource StringToBrushConverter}, FallbackValue=#FEF9C3}"
-                                                        BorderBrush="#94A3B8"
-                                                        BorderThickness="1.2"
-                                                        CornerRadius="4,4,10,10"
-                                                        Padding="13,16,13,12">
-                                                    <Border.Effect>
-                                                        <DropShadowEffect Color="#000000" BlurRadius="16" ShadowDepth="5" Opacity="0.42"/>
-                                                    </Border.Effect>
-
-                                                    <StackPanel>
-                                                        <!-- Thanh đầu tờ Note: Trạng thái thuộc bài + Nút gỡ ghim -->
-                                                        <DockPanel Margin="0,0,0,8">
-                                                            <Button DockPanel.Dock="Right"
-                                                                    Content="✕"
-                                                                    ToolTip="Gỡ ghim tờ Note này"
-                                                                    Command="{Binding DataContext.UnpinFlashcardCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                                    CommandParameter="{Binding}"
-                                                                    Background="#EF4444"
-                                                                    Foreground="White"
-                                                                    FontWeight="Bold"
-                                                                    FontSize="10"
-                                                                    Width="22"
-                                                                    Height="22"
-                                                                    BorderThickness="0"
-                                                                    Cursor="Hand">
-                                                                <Button.Template>
-                                                                    <ControlTemplate TargetType="Button">
-                                                                        <Border Background="{TemplateBinding Background}" CornerRadius="11">
-                                                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                                        </Border>
-                                                                    </ControlTemplate>
-                                                                </Button.Template>
-                                                            </Button>
-
-                                                            <Button DockPanel.Dock="Left"
-                                                                    Content="{Binding PinBadgeText}"
-                                                                    ToolTip="Bấm để đổi trạng thái: Note ghim → Đang ôn → Đã thuộc"
-                                                                    Command="{Binding DataContext.CyclePinnedCardMasteryCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                                    CommandParameter="{Binding}"
-                                                                    Background="{Binding PinThumbColor, Converter={StaticResource StringToBrushConverter}}"
-                                                                    Foreground="White"
-                                                                    FontSize="10.5"
-                                                                    FontWeight="Bold"
-                                                                    Padding="8,2"
-                                                                    BorderThickness="0"
-                                                                    Cursor="Hand">
-                                                                <Button.Template>
-                                                                    <ControlTemplate TargetType="Button">
-                                                                        <Border Background="{TemplateBinding Background}" CornerRadius="5" Padding="{TemplateBinding Padding}">
-                                                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                                        </Border>
-                                                                    </ControlTemplate>
-                                                                </Button.Template>
-                                                            </Button>
-                                                        </DockPanel>
-
-                                                        <!-- Mặt trước: Câu hỏi / Tiêu đề lưu ý -->
-                                                        <TextBlock Text="{Binding Question}"
-                                                                   FontSize="13.5"
-                                                                   FontWeight="Bold"
-                                                                   Foreground="#0F172A"
-                                                                   TextWrapping="Wrap"
-                                                                   Margin="0,0,0,6"/>
-
-                                                        <Border Height="1" Background="#CBD5E1" Margin="0,0,0,6"/>
-
-                                                        <!-- Mặt sau: Đáp án / Nội dung ghi chú lưu ý -->
-                                                        <Border Background="#FFFFFF"
-                                                                Opacity="0.88"
-                                                                CornerRadius="6"
-                                                                Padding="9,7"
-                                                                Margin="0,0,0,8"
-                                                                Visibility="{Binding IsAnswerVisible, Converter={StaticResource BoolToVisibilityConverter}}">
-                                                            <TextBlock Text="{Binding Answer}"
-                                                                       FontSize="12.5"
-                                                                       Foreground="#1E293B"
-                                                                       TextWrapping="Wrap"/>
-                                                        </Border>
-
-                                                        <!-- Nút lật mặt sau + gợi ý kéo thả -->
-                                                        <DockPanel>
-                                                            <TextBlock DockPanel.Dock="Right"
-                                                                       Text="✥ Kéo di chuyển"
-                                                                       FontSize="10"
-                                                                       Foreground="#475569"
-                                                                       VerticalAlignment="Center"/>
-
-                                                            <Button Content="{Binding FlipButtonText}"
-                                                                    Command="{Binding DataContext.FlipPinnedCardCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                                    CommandParameter="{Binding}"
-                                                                    Background="#0F172A"
-                                                                    Foreground="#F8FAFC"
-                                                                    FontSize="10.5"
-                                                                    FontWeight="SemiBold"
-                                                                    Padding="8,3"
-                                                                    BorderThickness="0"
-                                                                    HorizontalAlignment="Left"
-                                                                    Cursor="Hand">
-                                                                <Button.Template>
-                                                                    <ControlTemplate TargetType="Button">
-                                                                        <Border Background="{TemplateBinding Background}" CornerRadius="5" Padding="{TemplateBinding Padding}">
-                                                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                                        </Border>
-                                                                    </ControlTemplate>
-                                                                </Button.Template>
-                                                            </Button>
-                                                        </DockPanel>
-                                                    </StackPanel>
-                                                </Border>
-
-                                                <!-- Đinh ghim tròn 3D (Pushpin 📌) ở chính giữa đỉnh tờ Note -->
-                                                <Border Width="24"
-                                                        Height="24"
-                                                        CornerRadius="12"
-                                                        Background="{Binding PinThumbColor, Converter={StaticResource StringToBrushConverter}}"
-                                                        BorderBrush="#FFFFFF"
-                                                        BorderThickness="2"
-                                                        HorizontalAlignment="Center"
-                                                        VerticalAlignment="Top">
-                                                    <Border.Effect>
-                                                        <DropShadowEffect Color="#000000" BlurRadius="6" ShadowDepth="2" Opacity="0.5"/>
-                                                    </Border.Effect>
-                                                    <TextBlock Text="📌"
-                                                               FontSize="11"
-                                                               HorizontalAlignment="Center"
-                                                               VerticalAlignment="Center"/>
-                                                </Border>
-                                            </Grid>
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
-                            </Canvas>
-                        </ScrollViewer>
-                        </Grid>
-                    </Border>
-                </DockPanel>
-            </Border>
-        </Grid>
-
-        <!-- ========================================================================= -->
-        <!-- TAB 2: TRỢ LÝ AI (LƯU TRỮ LỊCH SỬ HỎI AI CỦA MÔN HỌC)                     -->
-        <!-- ========================================================================= -->
-        <Grid Grid.Row="2"
-              Visibility="{Binding SelectedTab, Converter={StaticResource StringEqualsToVisibilityConverter}, ConverterParameter=AI}">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="320" MinWidth="250"/>
-                <ColumnDefinition Width="10"/>
-                <ColumnDefinition Width="*" MinWidth="480"/>
-            </Grid.ColumnDefinitions>
-
-            <!-- CỘT TRÁI: DANH SÁCH LỊCH SỬ HỎI AI ĐÃ LƯU -->
-            <Border Grid.Column="0" Style="{StaticResource CardBorderStyle}" Padding="16">
-                <DockPanel>
-                    <TextBlock DockPanel.Dock="Top"
-                               Text="🕒 Lịch Sử Hỏi AI Của Môn"
-                               Style="{StaticResource SectionTitleTextStyle}"
-                               Margin="0,0,0,6"/>
-                    <TextBlock DockPanel.Dock="Top"
-                               Text="Mọi câu hỏi và giải thích của AI đều được lưu lại tại đây để bạn tra cứu lại bất cứ lúc nào."
-                               Style="{StaticResource MutedTextStyle}"
-                               Margin="0,0,0,10"/>
-
-                    <!-- Tìm kiếm trong lịch sử hỏi AI -->
-                    <Grid DockPanel.Dock="Top" Margin="0,0,0,10">
-                        <TextBox Style="{StaticResource ModernTextBoxStyle}"
-                                 Text="{Binding AiSearchKeyword, UpdateSourceTrigger=PropertyChanged}"/>
-                        <TextBlock Text="🔍 Tìm trong lịch sử hỏi AI..."
-                                   IsHitTestVisible="False"
-                                   Foreground="{DynamicResource TextMutedBrush}"
-                                   VerticalAlignment="Center"
-                                   Margin="12,0,0,0">
-                            <TextBlock.Style>
-                                <Style TargetType="TextBlock">
-                                    <Setter Property="Visibility" Value="Collapsed"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding AiSearchKeyword}" Value="">
-                                            <Setter Property="Visibility" Value="Visible"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBlock.Style>
-                        </TextBlock>
-                    </Grid>
-
-                    <!-- Trạng thái trống khi chưa có lịch sử hỏi AI -->
-                    <Border DockPanel.Dock="Top"
-                            Style="{StaticResource PlaceholderBorderStyle}"
-                            Visibility="{Binding HasAiHistory, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Invert}">
-                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <TextBlock Text="🤖" FontSize="28" HorizontalAlignment="Center" Margin="0,0,0,8"/>
-                            <TextBlock Text="Chưa có lịch sử hỏi AI"
-                                       FontSize="13.5"
-                                       FontWeight="SemiBold"
-                                       Foreground="{DynamicResource TextPrimaryBrush}"
-                                       HorizontalAlignment="Center"
-                                       Margin="0,0,0,4"/>
-                            <TextBlock Text="Hãy đặt câu hỏi ở khung bên phải. Toàn bộ lịch sử hỏi đáp của môn học sẽ được lưu tại đây."
-                                       Style="{StaticResource MutedTextStyle}"
-                                       TextAlignment="Center"/>
-                        </StackPanel>
-                    </Border>
-
-                    <!-- Danh sách các lần hỏi AI -->
-                    <ListBox ItemsSource="{Binding AiHistoryItems}"
-                             SelectedItem="{Binding SelectedAiHistory, Mode=TwoWay}"
-                             Visibility="{Binding HasAiHistory, Converter={StaticResource BoolToVisibilityConverter}}"
-                             Background="Transparent"
-                             BorderThickness="0"
-                             HorizontalContentAlignment="Stretch"
-                             ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-                        <ListBox.ItemContainerStyle>
-                            <Style TargetType="ListBoxItem">
-                                <Setter Property="Padding" Value="0"/>
-                                <Setter Property="Margin" Value="0,0,0,8"/>
-                                <Setter Property="Cursor" Value="Hand"/>
-                                <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="ListBoxItem">
-                                            <Border x:Name="AiItemBorder"
-                                                    Background="{DynamicResource SurfaceAltBrush}"
-                                                    BorderBrush="{DynamicResource CardBorderBrush}"
-                                                    BorderThickness="1"
-                                                    CornerRadius="10"
-                                                    Padding="12,10">
-                                                <ContentPresenter/>
-                                            </Border>
-                                            <ControlTemplate.Triggers>
-                                                <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter TargetName="AiItemBorder" Property="Background" Value="{DynamicResource SurfaceHoverBrush}"/>
-                                                </Trigger>
-                                                <Trigger Property="IsSelected" Value="True">
-                                                    <Setter TargetName="AiItemBorder" Property="Background" Value="{DynamicResource PrimaryLightBrush}"/>
-                                                    <Setter TargetName="AiItemBorder" Property="BorderBrush" Value="{DynamicResource PrimaryBrush}"/>
-                                                    <Setter TargetName="AiItemBorder" Property="BorderThickness" Value="1.5"/>
-                                                </Trigger>
-                                            </ControlTemplate.Triggers>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                            </Style>
-                        </ListBox.ItemContainerStyle>
-
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel>
-                                    <DockPanel Margin="0,0,0,4">
-                                        <Border DockPanel.Dock="Left"
-                                                Background="{DynamicResource PrimaryBrush}"
-                                                CornerRadius="5"
-                                                Padding="7,2">
-                                            <TextBlock Text="{Binding ModeName}"
-                                                       Foreground="White"
-                                                       FontSize="10.5"
-                                                       FontWeight="Bold"/>
-                                        </Border>
-                                        <TextBlock DockPanel.Dock="Right"
-                                                   Text="{Binding CreatedAtText}"
-                                                   FontSize="11"
-                                                   Foreground="{DynamicResource TextMutedBrush}"
-                                                   HorizontalAlignment="Right"
-                                                   VerticalAlignment="Center"/>
-                                    </DockPanel>
-                                    <TextBlock Text="{Binding Title}"
-                                               FontSize="13"
-                                               FontWeight="SemiBold"
-                                               Foreground="{DynamicResource TextPrimaryBrush}"
-                                               TextWrapping="Wrap"
-                                               Margin="0,2,0,0"/>
+                                    </Border>
                                 </StackPanel>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                </DockPanel>
-            </Border>
-
-            <GridSplitter Grid.Column="1"
-                          Width="10"
-                          HorizontalAlignment="Stretch"
-                          VerticalAlignment="Stretch"
-                          Background="Transparent"
-                          Cursor="SizeWE"/>
-
-            <!-- VÙNG CHÍNH BÊN PHẢI: KHUNG ĐẶT CÂU HỎI MỚI & XEM CHI TIẾT LỊCH SỬ HỎI AI -->
-            <Grid Grid.Column="2">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="12"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-
-                <!-- Khung 1: Đặt câu hỏi mới cho Trợ lý AI -->
-                <Border Grid.Row="0" Style="{StaticResource CardBorderStyle}" Padding="18">
-                    <StackPanel>
-                        <DockPanel Margin="0,0,0,10">
-                            <Button DockPanel.Dock="Right"
-                                    Content="📄 Lấy nội dung trang tài liệu đang mở"
-                                    Style="{StaticResource SecondaryButtonStyle}"
-                                    MinHeight="32" Padding="12,5" FontSize="12"
-                                    Command="{Binding UseCurrentDocumentPageForAiCommand}"/>
-                            <TextBlock Text="🤖 Đặt Câu Hỏi Cho Trợ Lý AI"
-                                       Style="{StaticResource SectionTitleTextStyle}"
-                                       VerticalAlignment="Center"/>
-                        </DockPanel>
-
-                        <Grid Margin="0,0,0,10">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="220"/>
-                                <ColumnDefinition Width="12"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="12"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-
-                            <ComboBox Grid.Column="0"
-                                      ItemsSource="{Binding AiModes}"
-                                      SelectedItem="{Binding SelectedAiMode}"
-                                      Height="38"
-                                      VerticalContentAlignment="Center"
-                                      Padding="10,0"/>
-
-                            <TextBox Grid.Column="2"
-                                     Style="{StaticResource ModernTextBoxStyle}"
-                                     Text="{Binding AiPromptInput, UpdateSourceTrigger=PropertyChanged}"
-                                     AcceptsReturn="True"
-                                     TextWrapping="Wrap"
-                                     MinHeight="52"/>
-
-                            <Button Grid.Column="4"
-                                    Content="✨ Hỏi AI &amp; Lưu Lịch Sử"
-                                    Style="{StaticResource PrimaryButtonStyle}"
-                                    Command="{Binding AskAiAndSaveHistoryCommand}"
-                                    VerticalAlignment="Stretch"/>
-                        </Grid>
-                    </StackPanel>
+                            </ScrollViewer>
+                        </Border>
+                    </DockPanel>
                 </Border>
 
-                <!-- Khung 2: Chi tiết Câu hỏi & Câu trả lời của AI từ lịch sử -->
-                <Border Grid.Row="2" Style="{StaticResource CardBorderStyle}" Padding="18">
+                <!-- GRID SPLITTER GIỮA TRÌNH ĐỌC VÀ STUDY MARGIN -->
+                <GridSplitter Grid.Column="1"
+                              Width="8"
+                              HorizontalAlignment="Stretch"
+                              VerticalAlignment="Stretch"
+                              Background="Transparent"
+                              Cursor="SizeWE"/>
+
+                <!-- PHẦN 2: STUDY MARGIN / FLASHCARD GẮN VỚI TÀI LIỆU ĐANG MỞ -->
+                <Border Grid.Column="2" Style="{StaticResource CardBorderStyle}" Padding="16">
                     <DockPanel>
-                        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,12">
-                            <WrapPanel DockPanel.Dock="Right" Orientation="Horizontal">
-                                <Button Content="📌 Ghim thành Note lên Bảng Blueprint"
+                        <!-- Thanh tiêu đề Study Margin + Nút Thêm Thẻ -->
+                        <Border DockPanel.Dock="Top"
+                                Background="{DynamicResource SurfaceAltBrush}"
+                                BorderBrush="{DynamicResource CardBorderBrush}"
+                                BorderThickness="1"
+                                CornerRadius="10"
+                                Padding="12,8"
+                                Margin="0,0,0,12">
+                            <DockPanel>
+                                <Button DockPanel.Dock="Right"
+                                        Content="📌 + Thêm Thẻ"
                                         Style="{StaticResource PrimaryButtonStyle}"
-                                        MinHeight="34" Padding="14,6" FontSize="12"
-                                        Command="{Binding PinAiHistoryToCanvasCommand}"
-                                        Margin="0,0,8,0"/>
-                                <Button Content="💾 Lưu chỉnh sửa"
-                                        Style="{StaticResource SecondaryButtonStyle}"
-                                        MinHeight="34" Padding="12,6" FontSize="12"
-                                        Command="{Binding SaveEditedAiHistoryCommand}"
-                                        Margin="0,0,8,0"/>
-                                <Button Content="🗑️ Xóa"
-                                        Style="{StaticResource DangerButtonStyle}"
-                                        MinHeight="34" Padding="12,6" FontSize="12"
-                                        Command="{Binding DeleteSelectedAiHistoryCommand}"/>
-                            </WrapPanel>
+                                        MinHeight="30" Padding="12,4" FontSize="11.5"
+                                        Command="{Binding TogglePinFormCommand}"/>
 
-                            <TextBlock Text="📋 Chi Tiết Nội Dung Hỏi Đáp Trong Lịch Sử"
-                                       Style="{StaticResource SectionTitleTextStyle}"
-                                       VerticalAlignment="Center"/>
-                        </DockPanel>
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock Text="📌 Study Margin &amp; Flashcard"
+                                               FontSize="13"
+                                               FontWeight="Bold"
+                                               Foreground="{DynamicResource TextPrimaryBrush}"/>
+                                    <TextBlock Text="{Binding PinnedFlashcardsCount, StringFormat='{}Gắn với tài liệu này ({0} thẻ)'}"
+                                               FontSize="10.5"
+                                               Foreground="{DynamicResource TextMutedBrush}"/>
+                                </StackPanel>
+                            </DockPanel>
+                        </Border>
 
-                        <ScrollViewer VerticalScrollBarVisibility="Auto">
-                            <StackPanel>
-                                <TextBlock Text="❓ Câu hỏi / Nội dung bạn đã gửi:"
-                                           FontSize="12.5"
-                                           FontWeight="Bold"
-                                           Foreground="{DynamicResource TextSecondaryBrush}"
-                                           Margin="0,0,0,6"/>
-                                <TextBox Style="{StaticResource ModernTextBoxStyle}"
-                                         Text="{Binding SelectedAiQuestionDetail, UpdateSourceTrigger=PropertyChanged}"
-                                         AcceptsReturn="True"
-                                         TextWrapping="Wrap"
-                                         MinHeight="68"
-                                         Margin="0,0,0,14"/>
-
-                                <TextBlock Text="💡 Phản hồi &amp; Giải thích của Trợ lý AI:"
-                                           FontSize="12.5"
-                                           FontWeight="Bold"
-                                           Foreground="{DynamicResource PrimaryBrush}"
-                                           Margin="0,0,0,6"/>
-                                <TextBox Style="{StaticResource ModernTextBoxStyle}"
-                                         Text="{Binding SelectedAiAnswerDetail, UpdateSourceTrigger=PropertyChanged}"
-                                         AcceptsReturn="True"
-                                         TextWrapping="Wrap"
-                                         MinHeight="190"
-                                         VerticalContentAlignment="Top"/>
+                        <!-- KHI TÀI LIỆU NÀY CHƯA CÓ FLASHCARD -->
+                        <Border DockPanel.Dock="Top"
+                                Style="{StaticResource PlaceholderBorderStyle}"
+                                Padding="16,24"
+                                Visibility="{Binding HasPinnedFlashcards, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Invert}">
+                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <TextBlock Text="📝" FontSize="32" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                                <TextBlock Text="Chưa có thẻ ghi nhớ"
+                                           FontSize="13.5"
+                                           FontWeight="SemiBold"
+                                           Foreground="{DynamicResource TextPrimaryBrush}"
+                                           HorizontalAlignment="Center"
+                                           Margin="0,0,0,4"/>
+                                <TextBlock Text="Mỗi tài liệu có danh sách Flashcard riêng biệt. Đọc tài liệu bên trái và bấm '+ Thêm Thẻ' để đính kèm kiến thức ôn tập!"
+                                           Style="{StaticResource MutedTextStyle}"
+                                           TextAlignment="Center"
+                                           Margin="0,0,0,14"/>
+                                <Button Content="📌 + Thêm Thẻ Mới"
+                                        Style="{StaticResource PrimaryButtonStyle}"
+                                        Command="{Binding TogglePinFormCommand}"
+                                        HorizontalAlignment="Center"/>
                             </StackPanel>
+                        </Border>
+
+                        <!-- DANH SÁCH FLASHCARDS CỦA TÀI LIỆU (ACTIVE RECALL: LẬT MẶT TRƯỚC / SAU & ĐÁNH GIÁ THUỘC BÀI) -->
+                        <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                      HorizontalScrollBarVisibility="Disabled"
+                                      Visibility="{Binding HasPinnedFlashcards, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <ItemsControl ItemsSource="{Binding PinnedFlashcards}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Margin="0,0,0,12"
+                                                Background="{Binding NotePaperColorHex, Converter={StaticResource StringToBrushConverter}, FallbackValue=#FEF9C3}"
+                                                BorderBrush="#94A3B8"
+                                                BorderThickness="1.2"
+                                                CornerRadius="10"
+                                                Padding="14,12">
+                                            <Border.Effect>
+                                                <DropShadowEffect Color="#000000" BlurRadius="12" ShadowDepth="3" Opacity="0.25"/>
+                                            </Border.Effect>
+
+                                            <StackPanel>
+                                                <!-- Thanh header: Trạng thái thuộc bài + Nút xóa thẻ -->
+                                                <DockPanel Margin="0,0,0,8">
+                                                    <Button DockPanel.Dock="Right"
+                                                            Content="✕"
+                                                            ToolTip="Xóa thẻ ghi nhớ này"
+                                                            Command="{Binding DataContext.UnpinFlashcardCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                            CommandParameter="{Binding}"
+                                                            Background="#EF4444"
+                                                            Foreground="White"
+                                                            FontWeight="Bold"
+                                                            FontSize="10"
+                                                            Width="22"
+                                                            Height="22"
+                                                            BorderThickness="0"
+                                                            Cursor="Hand">
+                                                        <Button.Template>
+                                                            <ControlTemplate TargetType="Button">
+                                                                <Border Background="{TemplateBinding Background}" CornerRadius="11">
+                                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                                </Border>
+                                                            </ControlTemplate>
+                                                        </Button.Template>
+                                                    </Button>
+
+                                                    <Button DockPanel.Dock="Left"
+                                                            Content="{Binding PinBadgeText}"
+                                                            ToolTip="Bấm để đổi trạng thái: Note ghim → Đang ôn → Đã thuộc"
+                                                            Command="{Binding DataContext.CyclePinnedCardMasteryCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                            CommandParameter="{Binding}"
+                                                            Background="{Binding PinThumbColor, Converter={StaticResource StringToBrushConverter}}"
+                                                            Foreground="White"
+                                                            FontSize="10.5"
+                                                            FontWeight="Bold"
+                                                            Padding="8,2"
+                                                            BorderThickness="0"
+                                                            Cursor="Hand">
+                                                        <Button.Template>
+                                                            <ControlTemplate TargetType="Button">
+                                                                <Border Background="{TemplateBinding Background}" CornerRadius="5" Padding="{TemplateBinding Padding}">
+                                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                                </Border>
+                                                            </ControlTemplate>
+                                                        </Button.Template>
+                                                    </Button>
+                                                </DockPanel>
+
+                                                <!-- Mặt trước: Câu hỏi / Khái niệm -->
+                                                <TextBlock Text="{Binding Question}"
+                                                           FontSize="13"
+                                                           FontWeight="Bold"
+                                                           Foreground="#0F172A"
+                                                           TextWrapping="Wrap"
+                                                           Margin="0,0,0,8"/>
+
+                                                <!-- Mặt sau: Đáp án chi tiết (Có thể ẩn/hiện để tự kiểm tra kiến thức) -->
+                                                <Border Background="#FFFFFF"
+                                                        Opacity="0.92"
+                                                        CornerRadius="6"
+                                                        Padding="10,8"
+                                                        Margin="0,0,0,8"
+                                                        Visibility="{Binding IsAnswerVisible, Converter={StaticResource BoolToVisibilityConverter}}">
+                                                    <TextBlock Text="{Binding Answer}"
+                                                               FontSize="12.5"
+                                                               Foreground="#1E293B"
+                                                               TextWrapping="Wrap"/>
+                                                </Border>
+
+                                                <!-- Nút Lật Thẻ (Active Recall) -->
+                                                <Button Content="{Binding FlipButtonText}"
+                                                        Command="{Binding DataContext.FlipPinnedCardCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                        CommandParameter="{Binding}"
+                                                        Background="#0F172A"
+                                                        Foreground="#F8FAFC"
+                                                        FontSize="11"
+                                                        FontWeight="SemiBold"
+                                                        Padding="10,4"
+                                                        BorderThickness="0"
+                                                        HorizontalAlignment="Left"
+                                                        Cursor="Hand">
+                                                    <Button.Template>
+                                                        <ControlTemplate TargetType="Button">
+                                                            <Border Background="{TemplateBinding Background}" CornerRadius="5" Padding="{TemplateBinding Padding}">
+                                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                            </Border>
+                                                        </ControlTemplate>
+                                                    </Button.Template>
+                                                </Button>
+                                            </StackPanel>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
                         </ScrollViewer>
                     </DockPanel>
                 </Border>
             </Grid>
         </Grid>
+
+        <!-- ========================================================================= -->
+        <!-- TAB 2: TRỢ LÝ AI - tách riêng thành AiAssistantTabView                    -->
+        <!-- ========================================================================= -->
+        <local:AiAssistantTabView Grid.Row="2"
+                                  Visibility="{Binding SelectedTab, Converter={StaticResource StringEqualsToVisibilityConverter}, ConverterParameter=AI}"/>
 
         <!-- ========================================================================= -->
         <!-- CỬA SỐ POPUP NỔI: TẠO & GHIM FLASHCARD / NOTE LÊN BẢNG BLUEPRINT           -->
@@ -1154,14 +963,14 @@
                                 MinHeight="30" Width="32" Padding="0"
                                 Command="{Binding ClosePinPopupCommand}"/>
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <TextBlock Text="📌 Tạo &amp; Ghim Flashcard Lên Bảng Blueprint"
+                            <TextBlock Text="📌 Tạo Flashcard Gắn Liền Với Tài Liệu Này"
                                        FontSize="16"
                                        FontWeight="Bold"
                                        Foreground="{DynamicResource TextPrimaryBrush}"/>
                         </StackPanel>
                     </DockPanel>
 
-                    <TextBlock Text="Điền mặt trước và mặt sau bên dưới. Sau khi ghim, tờ Note sẽ xuất hiện trên Bảng Blueprint để bạn tự do kéo thả đến vị trí bất kỳ."
+                    <TextBlock Text="Điền câu hỏi và đáp án bên dưới. Flashcard sẽ được lưu trong Study Margin gắn liền với tài liệu đang mở để bạn ôn tập bất cứ lúc nào."
                                Style="{StaticResource MutedTextStyle}"
                                Margin="0,0,0,14"/>
 
@@ -1243,7 +1052,7 @@
                                 Style="{StaticResource SecondaryButtonStyle}"
                                 Command="{Binding ClosePinPopupCommand}"
                                 Margin="0,0,10,0"/>
-                        <Button Content="📌 Ghim Lên Bảng Blueprint"
+                        <Button Content="📌 Lưu Flashcard Cho Tài Liệu"
                                 Style="{StaticResource PrimaryButtonStyle}"
                                 Command="{Binding PinFlashcardToCanvasCommand}"/>
                     </StackPanel>

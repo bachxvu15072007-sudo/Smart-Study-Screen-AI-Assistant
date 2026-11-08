@@ -98,6 +98,11 @@ public static class SubjectDocumentHelper
     private static readonly ConcurrentDictionary<string, List<DocumentPageSection>> _pageCache =
         new(StringComparer.OrdinalIgnoreCase);
 
+    public static void ClearCache()
+    {
+        _pageCache.Clear();
+    }
+
     public static string GetDocumentsFolder()
     {
         if (!Directory.Exists(_documentsFolder))
@@ -225,7 +230,7 @@ public static class SubjectDocumentHelper
             {
                 using PdfPage page = pdfDoc.GetPage(i);
                 double aspect = page.Size.Width > 0 ? page.Size.Height / page.Size.Width : 1.414;
-                double canvasW = 710;
+                double canvasW = 920;
                 double canvasH = Math.Round(canvasW * aspect);
 
                 BitmapImage? firstPageBitmap = null;
@@ -270,9 +275,10 @@ public static class SubjectDocumentHelper
                             }
                         }
                     }
-                    catch
+                    catch (Exception ex)
                     {
-                        // Bỏ qua lỗi kết xuất ngầm
+                        // Không chặn giao diện; trang chưa kết xuất sẽ được thử lại khi người dùng chuyển tới (EnsurePageRenderedAsync)
+                        Debug.WriteLine($"[SubjectDocumentHelper] Lỗi kết xuất ngầm PDF: {ex}");
                     }
                 });
             }
@@ -282,9 +288,11 @@ public static class SubjectDocumentHelper
                 return pages;
             }
         }
-        catch
+        catch (Exception ex)
         {
-            // Dự phòng nếu PDF không mở được bằng WinRT
+            // Dự phòng nếu PDF không mở được bằng WinRT: hiển thị lý do lên trang thay vì im lặng
+            Debug.WriteLine($"[SubjectDocumentHelper] Không mở được PDF: {ex}");
+            return BuildFallbackPages("PDF", fallbackText, $"{Path.GetFileName(fullPath)} (không đọc được PDF: {ex.Message})");
         }
 
         return BuildFallbackPages("PDF", fallbackText, Path.GetFileName(fullPath));
@@ -316,18 +324,24 @@ public static class SubjectDocumentHelper
                 }
             }
         }
-        catch
+        catch (Exception ex)
         {
-            // Bỏ qua nếu đang được kết xuất bởi luồng khác
+            Debug.WriteLine($"[SubjectDocumentHelper] Lỗi kết xuất trang {section.PageNumber}: {ex}");
+            if (string.IsNullOrWhiteSpace(section.Content))
+            {
+                section.Content = $"Không thể kết xuất trang này: {ex.Message}";
+            }
         }
     }
 
     private static async Task<BitmapImage?> RenderSinglePdfPageBitmapAsync(PdfPage page)
     {
         using var stream = new InMemoryRandomAccessStream();
+        // Nâng độ nét Ultra-HD: Tính theo tỷ lệ 4.0x kích thước chuẩn (2400px - 2800px) để hiển thị sắc nét từng nét chữ
+        uint targetWidth = (uint)Math.Clamp(page.Size.Width * 4.0, 2400, 2800);
         var options = new PdfPageRenderOptions
         {
-            DestinationWidth = (uint)Math.Clamp(page.Size.Width * 1.15, 760, 1080)
+            DestinationWidth = targetWidth
         };
 
         await page.RenderToStreamAsync(stream, options);
@@ -410,7 +424,7 @@ public static class SubjectDocumentHelper
                 AccentColor = "#2563EB",
                 SourceFilePath = filePath,
                 PageImage = embeddedImg,
-                CanvasWidth = 710,
+                CanvasWidth = 920,
                 CanvasHeight = embeddedImg != null ? 900 : 680
             });
             pageNum++;
@@ -482,7 +496,7 @@ public static class SubjectDocumentHelper
                 AccentColor = "#D97706",
                 SourceFilePath = filePath,
                 PageImage = slideImg,
-                CanvasWidth = 710,
+                CanvasWidth = 920,
                 CanvasHeight = slideImg != null ? 680 : 480
             });
             slideIdx++;
@@ -530,7 +544,8 @@ public static class SubjectDocumentHelper
 
     private static void bitmapDecode(BitmapImage bmp, MemoryStream ms)
     {
-        bmp.DecodePixelWidth = 760;
+        // Cho phép giải mã ảnh trích xuất từ slide PowerPoint / Word lên đến độ phân giải cao 2048px
+        bmp.DecodePixelWidth = 2048;
         bmp.StreamSource = ms;
     }
 
@@ -567,7 +582,7 @@ public static class SubjectDocumentHelper
                 Content = text,
                 FileType = fileType,
                 AccentColor = color,
-                CanvasWidth = 710,
+                CanvasWidth = 920,
                 CanvasHeight = 560
             }
         };

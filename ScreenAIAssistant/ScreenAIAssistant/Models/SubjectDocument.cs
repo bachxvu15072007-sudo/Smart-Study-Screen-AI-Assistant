@@ -50,4 +50,7 @@ public class SubjectDocument
     public string PersonalNote { get; set; } = string.Empty;
 
     public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+    // Navigation properties
+    public ICollection<Flashcard> Flashcards { get; set; } = new List<Flashcard>();
 }

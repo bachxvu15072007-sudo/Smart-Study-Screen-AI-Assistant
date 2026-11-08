@@ -77,6 +77,13 @@ public class AppDbContext : DbContext
             .HasForeignKey(f => f.SnippetNoteId)
             .OnDelete(DeleteBehavior.SetNull);
 
+        // Cấu hình SubjectDocument (1 - N) Flashcard (Nullable FK)
+        modelBuilder.Entity<SubjectDocument>()
+            .HasMany(d => d.Flashcards)
+            .WithOne(f => f.Document)
+            .HasForeignKey(f => f.DocumentId)
+            .OnDelete(DeleteBehavior.Cascade);
+
         // Cấu hình Subject (1 - N) StudySession
         modelBuilder.Entity<Subject>()
             .HasMany(s => s.StudySessions)
@@ -122,6 +129,16 @@ public class AppDbContext : DbContext
         Database.ExecuteSqlRaw(@"
             DELETE FROM SnippetNotes
             WHERE Title LIKE '[PDF]%' OR Title LIKE '[WORD]%' OR Title LIKE '[PPT]%';");
+
+        // Đảm bảo cột DocumentId tồn tại trên bảng Flashcards để phân định flashcard theo từng tài liệu
+        try
+        {
+            Database.ExecuteSqlRaw("ALTER TABLE Flashcards ADD COLUMN DocumentId INTEGER NULL;");
+        }
+        catch
+        {
+            // Bỏ qua nếu cột đã tồn tại
+        }
 
         if (Subjects.Any()) return;
 

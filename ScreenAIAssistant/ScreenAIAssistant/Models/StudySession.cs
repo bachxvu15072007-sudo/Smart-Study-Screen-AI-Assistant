@@ -194,6 +194,7 @@ public partial class PinnedFlashcardItem : ObservableObject
 
     public int Id => FlashcardEntity.Id;
     public int SubjectId => FlashcardEntity.SubjectId;
+    public int? DocumentId => FlashcardEntity.DocumentId;
 
     [ObservableProperty]
     private string _question = string.Empty;

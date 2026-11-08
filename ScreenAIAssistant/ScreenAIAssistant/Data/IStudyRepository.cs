@@ -40,7 +40,7 @@ public interface IStudyRepository
     #endregion
 
     #region 3. Phân hệ Thẻ ghi nhớ Flashcard (Flashcard - Thành viên 2)
-    Task<List<Flashcard>> GetFlashcardsAsync(int? subjectId = null, MasteryStatus? status = null, string? searchKeyword = null);
+    Task<List<Flashcard>> GetFlashcardsAsync(int? subjectId = null, MasteryStatus? status = null, string? searchKeyword = null, int? documentId = null);
     Task<Flashcard?> GetFlashcardByIdAsync(int id);
     Task<Flashcard> AddFlashcardAsync(Flashcard flashcard);
     Task AddFlashcardsRangeAsync(IEnumerable<Flashcard> flashcards);
