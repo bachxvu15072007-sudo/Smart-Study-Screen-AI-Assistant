@@ -159,17 +159,17 @@ public static class CanvasDragHelper
         {
             scrollViewer.Cursor = Cursors.Hand;
             scrollViewer.PreviewMouseWheel += OnBoardPreviewMouseWheel;
-            scrollViewer.MouseLeftButtonDown += OnBoardMouseLeftButtonDown;
-            scrollViewer.MouseMove += OnBoardMouseMove;
-            scrollViewer.MouseLeftButtonUp += OnBoardMouseLeftButtonUp;
+            scrollViewer.PreviewMouseLeftButtonDown += OnBoardPreviewMouseLeftButtonDown;
+            scrollViewer.PreviewMouseMove += OnBoardPreviewMouseMove;
+            scrollViewer.PreviewMouseLeftButtonUp += OnBoardPreviewMouseLeftButtonUp;
             scrollViewer.LostMouseCapture += OnBoardLostMouseCapture;
         }
         else
         {
             scrollViewer.PreviewMouseWheel -= OnBoardPreviewMouseWheel;
-            scrollViewer.MouseLeftButtonDown -= OnBoardMouseLeftButtonDown;
-            scrollViewer.MouseMove -= OnBoardMouseMove;
-            scrollViewer.MouseLeftButtonUp -= OnBoardMouseLeftButtonUp;
+            scrollViewer.PreviewMouseLeftButtonDown -= OnBoardPreviewMouseLeftButtonDown;
+            scrollViewer.PreviewMouseMove -= OnBoardPreviewMouseMove;
+            scrollViewer.PreviewMouseLeftButtonUp -= OnBoardPreviewMouseLeftButtonUp;
             scrollViewer.LostMouseCapture -= OnBoardLostMouseCapture;
         }
     }
@@ -178,10 +178,11 @@ public static class CanvasDragHelper
     {
         if (sender is not ScrollViewer scrollViewer) return;
 
-        // Khi giữ phím Ctrl và lăn chuột: Phóng to / Thu nhỏ chiếc bảng Blueprint
+        // Khi giữ phím Ctrl và lăn chuột: Phóng to / Thu nhỏ tài liệu
         if ((Keyboard.Modifiers & ModifierKeys.Control) != 0)
         {
-            if (scrollViewer.DataContext is SubjectWorkspaceViewModel vm)
+            var vm = FindViewModel(scrollViewer);
+            if (vm != null)
             {
                 if (e.Delta > 0)
                 {
@@ -196,12 +197,12 @@ public static class CanvasDragHelper
         }
     }
 
-    private static void OnBoardMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+    private static void OnBoardPreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
         if (sender is not ScrollViewer scrollViewer) return;
         if (_isDraggingNote) return;
 
-        // Nếu bấm vào thanh cuộn (ScrollBar), nút bấm hoặc đang bấm vào tờ Note Pinned thì không kích hoạt kéo bảng
+        // Nếu bấm vào thanh cuộn (ScrollBar) hoặc nút bấm (Button) thì để thực hiện hành động mặc định
         if (IsClickOnScrollBarOrNoteOrButton(e.OriginalSource as DependencyObject, scrollViewer))
         {
             return;
@@ -213,12 +214,12 @@ public static class CanvasDragHelper
         _panStartHorizontalOffset = scrollViewer.HorizontalOffset;
         _panStartVerticalOffset = scrollViewer.VerticalOffset;
 
-        scrollViewer.Cursor = Cursors.ScrollAll;
+        scrollViewer.Cursor = Cursors.SizeAll;
         scrollViewer.CaptureMouse();
         e.Handled = true;
     }
 
-    private static void OnBoardMouseMove(object sender, MouseEventArgs e)
+    private static void OnBoardPreviewMouseMove(object sender, MouseEventArgs e)
     {
         if (!_isPanningBoard || _panningScrollViewer == null) return;
 
@@ -231,7 +232,7 @@ public static class CanvasDragHelper
         e.Handled = true;
     }
 
-    private static void OnBoardMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+    private static void OnBoardPreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
     {
         if (!_isPanningBoard) return;
 
@@ -255,6 +256,25 @@ public static class CanvasDragHelper
         }
         _isPanningBoard = false;
         _panningScrollViewer = null;
+    }
+
+    private static SubjectWorkspaceViewModel? FindViewModel(FrameworkElement element)
+    {
+        if (element.DataContext is SubjectWorkspaceViewModel vm)
+        {
+            return vm;
+        }
+
+        DependencyObject? current = element;
+        while (current != null)
+        {
+            if (current is FrameworkElement fe && fe.DataContext is SubjectWorkspaceViewModel parentVm)
+            {
+                return parentVm;
+            }
+            current = GetParentSafe(current);
+        }
+        return null;
     }
 
     #endregion
