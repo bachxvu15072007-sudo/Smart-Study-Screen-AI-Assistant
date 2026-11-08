@@ -151,17 +151,23 @@ public class StudyRepository : IStudyRepository
 
     #region 3. Phân hệ Thẻ ghi nhớ Flashcard (Flashcard - Thành viên 2)
 
-    public async Task<List<Flashcard>> GetFlashcardsAsync(int? subjectId = null, MasteryStatus? status = null, string? searchKeyword = null)
+    public async Task<List<Flashcard>> GetFlashcardsAsync(int? subjectId = null, MasteryStatus? status = null, string? searchKeyword = null, int? documentId = null)
     {
         var query = _context.Flashcards
             .Include(f => f.Subject)
             .Include(f => f.SnippetNote)
+            .Include(f => f.Document)
             .AsNoTracking()
             .AsQueryable();
 
         if (subjectId.HasValue && subjectId.Value > 0)
         {
             query = query.Where(f => f.SubjectId == subjectId.Value);
+        }
+
+        if (documentId.HasValue && documentId.Value > 0)
+        {
+            query = query.Where(f => f.DocumentId == documentId.Value);
         }
 
         if (status.HasValue)
@@ -207,6 +213,7 @@ public class StudyRepository : IStudyRepository
         {
             existing.SubjectId = flashcard.SubjectId;
             existing.SnippetNoteId = flashcard.SnippetNoteId;
+            existing.DocumentId = flashcard.DocumentId;
             existing.Question = flashcard.Question;
             existing.Answer = flashcard.Answer;
             existing.MasteryStatus = flashcard.MasteryStatus;

@@ -29,3 +29,8 @@ artifacts/
 Thumbs.db
 .DS_Store
 desktop.ini
+
+## Thu muc build phu & log loi cuc bo
+bin_run/
+bin_v2/
+vs_error.log
